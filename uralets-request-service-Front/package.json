@@ -2,6 +2,7 @@
   "name": "uralets-request-service-Front",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "axios": "^0.17.1",
     "bootstrap": "^3.3.7",

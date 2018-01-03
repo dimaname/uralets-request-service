@@ -8,9 +8,9 @@ class App extends Component {
   render() {
     return (
       <div>
-       <Switch>
-        <Route path="/" exact component={RequestList}/>
-        <Route path="/login" exact component={LoginPage}/>        
+       <Switch>       
+        <Route path="/login" exact component={LoginPage}/>    
+        <Route path="/" component={RequestList}/>    
        </Switch>     
       </div>
     );
