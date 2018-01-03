@@ -2694,7 +2694,7 @@ class PHP_CRUD_API {
  ));
  if ($auth->executeCommand()) exit(0);
  if (empty($_SESSION['user']) || !$auth->hasValidCsrfToken()) {
-	header('Location: /login.html', true, 303 ); 
+	header('Location: /#/login', true, 303 ); 
 	exit(0);
  }
  
