@@ -1,13 +1,8 @@
 import {combineReducers} from 'redux';
 
-//import todoReducer, {todoState} from '../reducers/todoReducer';
+import userReducer from '../reducers/userReducer';
 
-export const initialState = {
-	user: {
-		token: null,
-	}
-};
 
 export const reducers = combineReducers({
-   // todoList: todoReducer,
+    user: userReducer,
 });
