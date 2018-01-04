@@ -9,31 +9,30 @@ export class LoginPageComponent extends React.Component{
        
     }
     
-    render() {	debugger;
+    render() {
       return (
-      
-	    <Form horizontal>
-		    <FormGroup controlId="formHorizontalLogin">
-		    	<Col componentClass={styles['controlLabel']} sm={3}>
+	    <Form horizontal className={styles['form']}>
+		    <FormGroup controlId="formHorizontalEmail">
+		    	<Col componentClass={ControlLabel} sm={5}>
 		       		Пользователь
 		      	</Col>
-			    <Col sm={9}>
+			    <Col sm={7}>
 			      <FormControl type="text" placeholder="Имя пользователя" />
 			    </Col>
 		    </FormGroup>
 
 		    <FormGroup controlId="formHorizontalPassword">
-		      <Col componentClass={styles['controlLabel']} sm={3}>
+		      <Col componentClass={ControlLabel} sm={5}>
 		        Пароль
 		      </Col>
-		      <Col sm={9}>
+		      <Col sm={7}>
 		        <FormControl type="password" placeholder="Пароль" />
 		      </Col>
 		    </FormGroup>
 
 
 		    <FormGroup>
-		      <Col smOffset={2} sm={10}>
+		      <Col smOffset={5} sm={10}>
 		        <Button type="submit">
 		          Войти
 		        </Button>

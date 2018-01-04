@@ -33,7 +33,7 @@ class App extends Component {
       <Header/> 
        <Grid>      
         <Row className="show-grid">
-          <Col sm={6} sm-offset={3} >
+          <Col sm={9} sm-offset={3} >
             <Switch>       
              <Route path="/login" exact component={LoginPage}/>    
              <Route path="/" render={props => (isAuth ? 
