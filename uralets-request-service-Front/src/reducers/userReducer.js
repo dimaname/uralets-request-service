@@ -11,6 +11,16 @@ export const getSavedUserToken = () =>
            
     };
 
+export const getUserTokenFromApi = (username, password) =>
+    (dispatch, s, api) => {
+        
+        const userToken = api.appApi.getToken(username, password).then(()=>{
+             debugger;
+        });
+         
+           
+    };
+
 const initialState = {
     token: null,
 };

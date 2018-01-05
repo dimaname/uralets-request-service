@@ -5,12 +5,6 @@ import { checkUserAuth } from '../utils/auth';
 import { connect } from 'react-redux'
 
 
-function mapStateToProps(state) {
-  return {
-    user: state.user,
-  }
-}
-
 
 class Header extends React.Component{
     render() {
@@ -41,4 +35,7 @@ class Header extends React.Component{
   
 }
 
-export default connect(mapStateToProps)(Header);
+export default connect(
+		(state) => ({user: state.user}),
+	)(Header);
+
