@@ -4,7 +4,7 @@ import RequestList from '../requestList/requestList';
 import LoginPage from '../loginPage/loginPage';
 import ListManagerComponent from '../listManager/listManager';
 import Header from '../header/header';
-import { Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect, HashRouter } from 'react-router-dom'
 import { Grid, Row, Col } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import { getApp } from '../reducers/appReducer'
@@ -26,23 +26,24 @@ class App extends Component {
     const isAuth = this.props.user.id !== null;
     const isLoading = this.state.isLoading;
 
-    return <div> 
+    return <HashRouter>
+     <div>
       <Header/> 
        <Grid>      
         <Row className="show-grid">
           <Col sm={12}>
             {!isLoading && 
-              <Switch>       
+              <Switch> 
                 <Route path="/login" exact component={LoginPage}/>    
                 <PrivateRoute path="/db" exact component={ListManagerComponent} isAuth={isAuth}/>
                 <PrivateRoute path="/" component={RequestList} isAuth={isAuth}/>    
-                    
-              </Switch>
-            }
+              </Switch>            
+            }                   
           </Col>
         </Row>    
-      </Grid>      
-    </div>   
+      </Grid>     
+      </div> 
+    </HashRouter>   
   }
 }
 
