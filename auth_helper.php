@@ -180,6 +180,10 @@ class PHP_API_AUTH {
 			}
 			echo json_encode($app);
 			return true;
+		}else if($method=='GET' && 'logout' == $request){
+			$auth = $this->auth;
+			$auth->logOutAndDestroySession();
+			return true;
 		}
 		return false;
 	}

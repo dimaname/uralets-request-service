@@ -16,8 +16,7 @@ export const getApp = () =>
 
 const initialState = {};
 
-const reducer = handleActions({
-      
-    }, initialState);
+const reducer = handleActions({}, 
+    initialState);
 
 export default reducer;

@@ -1,6 +1,7 @@
 import {createAction, handleActions} from 'redux-actions';
 
 export const setUser = createAction('SET_USER', (userData) => (userData));
+export const clearUser = createAction('CLEAR_USER');
 
 
 export const loginByUsername = (username, password) =>
@@ -12,6 +13,14 @@ export const loginByUsername = (username, password) =>
                 dispatch(setUser(userData));               
             }           
             return userData;            
+        });
+    };
+
+export const logout = () =>
+    (dispatch, s, api) => {        
+        return api.appApi.logout().then(()=>{
+            dispatch(clearUser());                      
+            return true;            
         });
     };
 
@@ -27,6 +36,13 @@ const reducer = handleActions({
         return {
             ...state, id:userData.id, username: userData.username,
         };
-    }}, initialState);
-
+    },
+    ['CLEAR_USER']: (state, action) => {
+        return {
+            ...state, id:null, username: null,
+        };
+    }
+    }, initialState);  
+    
+  
 export default reducer;
