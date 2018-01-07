@@ -22,13 +22,11 @@ class Header extends React.Component{
 			        <NavItem href="/#/">Заявка</NavItem>
 			        <NavItem href="/#/db">База</NavItem>			        
 			      </Nav>}
-			      <Nav pullRight>			        
+			      <Nav pullRight>
 			        {isAuth && <NavItem onClick={ this.logout.bind(this) }>Выйти</NavItem>}
-			        {!isAuth && <NavItem  href="/#/login">Войти</NavItem>}
+			        {!isAuth && <NavItem href="/#/login">Войти</NavItem>}
 			      </Nav>
 		      </Navbar.Collapse>
-			
-
 		  </Navbar>      	
       )
     }

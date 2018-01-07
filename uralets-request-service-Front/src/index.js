@@ -7,7 +7,7 @@ import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import App from './app/App';
 import {initStore} from './app/initStore';
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter  } from 'react-router-dom'
 
 const store = initStore();
 
@@ -15,9 +15,9 @@ const store = initStore();
 
 ReactDOM.render( 
 	<Provider store={store}>
-		<HashRouter>
+		<BrowserRouter >
 			<App /> 
-		</HashRouter>
+		</BrowserRouter>
 	</Provider>,
 	 document.getElementById('root'));
 

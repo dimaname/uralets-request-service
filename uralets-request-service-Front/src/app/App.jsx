@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import RequestList from '../requestList/requestList';
 import LoginPage from '../loginPage/loginPage';
+import ListManagerComponent from '../listManager/listManager';
 import Header from '../header/header';
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Grid, Row, Col } from 'react-bootstrap';
@@ -33,9 +34,9 @@ class App extends Component {
             {!isLoading && 
               <Switch>       
                 <Route path="/login" exact component={LoginPage}/>    
-                <Route path="/" render={props => (isAuth ? 
-                       (<RequestList/>) : 
-                       (<Redirect to='/login'/>) )}/>    
+                <PrivateRoute path="/db" exact component={ListManagerComponent} isAuth={isAuth}/>
+                <PrivateRoute path="/" component={RequestList} isAuth={isAuth}/>    
+                    
               </Switch>
             }
           </Col>
@@ -45,6 +46,16 @@ class App extends Component {
   }
 }
 
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  console.log(rest.isAuth)
+  return <Route {...rest} render={props => (
+    rest.isAuth ? (
+      <Component {...props}/>
+    ) : (
+      <Redirect to='/login'/>
+    )
+  )}/>
+}
 
 export default connect(
     (state) => ({user: state.user}),  
