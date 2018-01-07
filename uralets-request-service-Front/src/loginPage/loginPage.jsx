@@ -84,7 +84,7 @@ export class LoginPageComponent extends React.Component{
 	    });
     }
 
-    handleSubmit(event){
+    async handleSubmit(event){
     	event.preventDefault();
     	const login = this.state.login;
 		const password = this.state.password;
@@ -94,7 +94,8 @@ export class LoginPageComponent extends React.Component{
 			return; 
 		}else{
 			this.setState({isLoading: true});
-			const token = this.props.getUserTokenFromApi(login, password);
+			const token = await this.props.getUserTokenFromApi(login, password);
+			this.setState({isLoading: false});
 			debugger;
 		}
     }

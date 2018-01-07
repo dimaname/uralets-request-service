@@ -1,4 +1,4 @@
-import {createAction, handleActions, combineActions} from 'redux-actions';
+import {createAction, handleActions} from 'redux-actions';
 
 export const setUserToken = createAction('SET_USER_TOKEN', (token) => ({token}));
 
@@ -14,8 +14,11 @@ export const getSavedUserToken = () =>
 export const getUserTokenFromApi = (username, password) =>
     (dispatch, s, api) => {
         
-        const userToken = api.appApi.getToken(username, password).then(()=>{
-             debugger;
+        return api.appApi.getToken(username, password).then((responce)=>{
+            const userToken = responce.data;
+            debugger;
+            dispatch(setUserToken(userToken));
+            return userToken;            
         });
          
            

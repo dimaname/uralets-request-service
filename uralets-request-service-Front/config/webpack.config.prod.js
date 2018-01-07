@@ -149,7 +149,7 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
-              
+              presets: ['es2015', 'stage-0', 'react'],
               compact: true,
             },
           },

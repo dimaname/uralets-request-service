@@ -6,14 +6,12 @@ import {
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import App from './app/App';
-import registerServiceWorker from './registerServiceWorker';
 import {initStore} from './app/initStore';
 import { HashRouter } from 'react-router-dom'
 
 const store = initStore();
 
 
-registerServiceWorker();
 
 ReactDOM.render( 
 	<Provider store={store}>
@@ -22,5 +20,5 @@ ReactDOM.render(
 		</HashRouter>
 	</Provider>,
 	 document.getElementById('root'));
-registerServiceWorker();
+
  
