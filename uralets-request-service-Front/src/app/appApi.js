@@ -4,11 +4,11 @@ const apiUrl = "http://localhost/api.php"
 
 
 export const appApi = {
-  getTodos() {
-    return axios.get('/units', {baseURL:apiUrl});
+  getApp() {
+    return axios.get('/app', {baseURL:apiUrl});
   },
-  getToken(username,password) {
-    return axios.post('/', {a:123, username, password}, {baseURL:apiUrl});
+  loginByUsername(username,password) {
+    return axios.post('/', {username, password}, {baseURL:apiUrl});
   },
  
 }

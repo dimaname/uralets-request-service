@@ -1,14 +1,11 @@
 import * as React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
-import { checkUserAuth } from '../utils/auth';
 import { connect } from 'react-redux'
-
-
 
 class Header extends React.Component{
     render() {
-      const isAuth = checkUserAuth(this.props.user);
+      const isAuth = this.props.user.id !== null;
 
       return (   
 		<Navbar inverse fixedTop>

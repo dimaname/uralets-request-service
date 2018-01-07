@@ -126,30 +126,59 @@ class PHP_API_AUTH {
 			$auth = $this->auth;
 			if (isset($input->$username) && isset($input->$password)) {
 				try {
-					
 					$rememberDuration = (int) (60 * 60 * 24 * 365.25);
 					$auth->loginWithUsername($input->$username, $input->$password,  $rememberDuration );
+					$app = array();
+					$app['user'] = null;
+					$userData['id'] = $auth->getUserId();
+					$userData['username'] = $auth->getUsername(); 
+					echo json_encode($userData);
 					
 				}
 				catch (\Delight\Auth\InvalidEmailException $e) {
-					echo 'incorrect email please try again' ;
+					$responce = array('type'=>'error');
+					$responce['message'] = 'InvalidEmailException';
+					echo json_encode($responce);
+					$auth->logOutAndDestroySession(); 
+				}catch (\Delight\Auth\UnknownUsernameException $e) {
+					$responce = array('type'=>'error');
+					$responce['message'] = 'UnknownUsernameException';
+					echo json_encode($responce);
 					$auth->logOutAndDestroySession();
 				}
 				catch (\Delight\Auth\InvalidPasswordException $e) {
-					echo 'incorrect password please try again' ;
+					$responce = array('type'=>'error');
+					$responce['message'] = 'InvalidPasswordException';
+					echo json_encode($responce);
 					$auth->logOutAndDestroySession();
 				}
 				catch (\Delight\Auth\EmailNotVerifiedException $e) {
-					echo 'EmailNotVerifiedException' ;
+					$responce = array('type'=>'error');
+					$responce['message'] = 'EmailNotVerifiedException';
+					echo json_encode($responce);
 					$auth->logOutAndDestroySession();
 				}
 				catch (\Delight\Auth\TooManyRequestsException $e) {
-				   echo 'TooManyRequestsException' ;
-				   $auth->logOutAndDestroySession();
+					$responce = array('type'=>'error');
+					$responce['message'] = 'TooManyRequestsException';
+					echo json_encode($responce);
+				    $auth->logOutAndDestroySession();
 				}			
 			} else {
 				$auth->logOutAndDestroySession();
 			}
+			return true;
+		}else if($method=='GET' && 'app' == $request){
+			$auth = $this->auth;
+			$app = array();
+			$app['user'] = null;
+			if ($auth->isLoggedIn() && $auth->isNormal() ){
+			    $userData = array();
+				$userData['id'] = $auth->getUserId();
+				$userData['username'] = $auth->getUsername();    	
+				$app['user'] = $userData;				
+			}
+			echo json_encode($app);
 			return true;
 		}
 		return false;

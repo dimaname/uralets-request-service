@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Form, FormGroup,FormControl, Col, Button, ControlLabel } from 'react-bootstrap';
+import { Form, FormGroup,FormControl, Col, Button, ControlLabel, Alert } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom'
-import { checkUserAuth } from '../utils/auth';
-import { getUserTokenFromApi } from '../reducers/userReducer'
+import { loginByUsername } from '../reducers/userReducer'
 import { connect } from 'react-redux'
 import '../app/App.css'
 const styles = require('./loginPage.css');
@@ -12,6 +11,8 @@ export class LoginPageComponent extends React.Component{
 		super(props);
 	    this.state = {
 	      isLoading: false,
+	      alertVisible: false,
+	      alertText: '',
 	      loginValid: null,
 	      passwordValid: null,
 	      login: '',
@@ -23,55 +24,61 @@ export class LoginPageComponent extends React.Component{
     }
     
     render() {
-    	const isAuth = checkUserAuth(this.props.user);
+    	const isAuth = this.props.user.id !== null;
         const isLoading = this.state.isLoading;
+        const isAlert = this.state.alertVisible;
 		
 		if(isAuth){
 		 	return (<Redirect to={'/'}/>)
 		} 
 
         return ( <div style={{width:'100%'}}> 
-        {isLoading && <div className='loader-wrapper'><div className='loader'></div></div>}		     	
-	    <Form horizontal className={styles['form']}>
-	       <FormGroup controlId="formHorizontalLogin" validationState={this.state.loginValid} >
-		    	<Col componentClass={ControlLabel} sm={4}>
-		       		Пользователь
-		      	</Col>
-			    <Col sm={4}>
-			      <FormControl 
-			      type="text" 
-			      name="login"	  
-			      placeholder="Имя пользователя"
-			      value={this.state.login}			     
-		       	  onChange={this.handleChange} 
-		         />
-			    </Col>
-		    </FormGroup>
+	        {isLoading && <div className='loader-wrapper'><div className='loader'></div></div>}
+	        {isAlert &&		     	
+		   		<Alert bsStyle="danger">
+					<h4>Ошибка входа!</h4> 
+					{this.state.alertText}
+				</Alert>
+			}
+		    <Form horizontal className={styles['form']}>
+		       <FormGroup controlId="formHorizontalLogin" validationState={this.state.loginValid} >
+			    	<Col componentClass={ControlLabel} sm={4}>
+			       		Пользователь
+			      	</Col>
+				    <Col sm={4}>
+				      <FormControl 
+				      type="text" 
+				      name="login"	  
+				      placeholder="Имя пользователя"
+				      value={this.state.login}			     
+			       	  onChange={this.handleChange} 
+			         />
+				    </Col>
+			    </FormGroup>
+			    <FormGroup controlId="formHorizontalPassword" validationState={this.state.passwordValid}>
+			      <Col componentClass={ControlLabel} sm={4}>
+			        Пароль
+			      </Col>
+			      <Col sm={4}>
+			        <FormControl 
+			        type="password"	
+			        name="password"	        
+			        placeholder="Пароль" 
+			        value={this.state.password} 		       
+			        onChange={this.handleChange} 
+			        />
+			      </Col>
+			    </FormGroup>
 
-		    <FormGroup controlId="formHorizontalPassword" validationState={this.state.passwordValid}>
-		      <Col componentClass={ControlLabel} sm={4}>
-		        Пароль
-		      </Col>
-		      <Col sm={4}>
-		        <FormControl 
-		        type="password"	
-		        name="password"	        
-		        placeholder="Пароль" 
-		        value={this.state.password} 		       
-		        onChange={this.handleChange} 
-		        />
-		      </Col>
-		    </FormGroup>
 
-
-		    <FormGroup>
-		      <Col smOffset={4} sm={8}>
-		        <Button type="submit"  onClick={this.handleSubmit}>
-		          Войти
-		        </Button>
-		      </Col>
-		    </FormGroup>
-		</Form></div>
+			    <FormGroup>
+			      <Col smOffset={4} sm={8}>
+			        <Button type="submit"  onClick={this.handleSubmit}>
+			          Войти
+			        </Button>
+			      </Col>
+			    </FormGroup>
+			</Form></div>
       )
     }
 
@@ -89,14 +96,19 @@ export class LoginPageComponent extends React.Component{
     	const login = this.state.login;
 		const password = this.state.password;
 		const fieldsIsGood = this.fieldValidation();
-		
+		this.setState({alertVisible: false});
 		if(!fieldsIsGood){
 			return; 
 		}else{
 			this.setState({isLoading: true});
-			const token = await this.props.getUserTokenFromApi(login, password);
-			this.setState({isLoading: false});
-			debugger;
+			const userData = await this.props.loginByUsername(login, password);
+			const newState = {isLoading: false};
+			if(userData && userData.type === 'error'){
+				let alertText = userData.message;
+				newState.alertVisible = true;
+				newState.alertText = alertText;
+			}
+			this.setState(newState);
 		}
     }
 
@@ -126,5 +138,5 @@ export class LoginPageComponent extends React.Component{
 
 export default connect(
 		(state) => ({user: state.user}),
-		{ getUserTokenFromApi }
+		{ loginByUsername }
 	)(LoginPageComponent);
