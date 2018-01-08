@@ -1,1 +1,2 @@
- linguist-language=JavaScript
+*.jsx linguist-language=JavaScript
+auth/* linguist-vendored
