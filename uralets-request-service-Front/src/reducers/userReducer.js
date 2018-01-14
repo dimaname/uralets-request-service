@@ -30,14 +30,14 @@ const initialState = {
 };
 
 const reducer = handleActions({
-    ['SET_USER']: (state, action) => {
+    [setUser.toString()]: (state, action) => {
         const userData = action.payload;
      
         return {
             ...state, id:userData.id, username: userData.username,
         };
     },
-    ['CLEAR_USER']: (state, action) => {
+    [clearUser.toString()]: (state, action) => {
         return {
             ...state, id:null, username: null,
         };

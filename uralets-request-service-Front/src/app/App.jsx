@@ -18,7 +18,7 @@ class App extends Component {
     }
 
   async componentWillMount(){
-     var app = await this.props.getApp();
+     //var app = await this.props.getApp();
      this.setState({isLoading: false});   
   }
 
