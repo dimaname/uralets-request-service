@@ -13,4 +13,21 @@ export const appApi = {
   logout() {
     return axios.get('/logout', {baseURL:apiUrl, withCredentials: true});
   },
+  getPupilList() {
+    return axios.get('/mens', {baseURL:apiUrl, withCredentials: true}).then( data =>{
+      return deserialize(data.data.mens);
+    });
+  },
+}
+
+const deserialize = function( {columns, records} ){
+
+    const result = records.map(record =>{
+        const newRecord = {};
+        record.forEach( (field, i) => {
+            newRecord[columns[i]] = field;
+        });
+        return newRecord;
+    });
+  return result;
 }

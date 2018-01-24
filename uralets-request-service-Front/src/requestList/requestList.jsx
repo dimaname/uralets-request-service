@@ -14,7 +14,7 @@ export class RequestListComponent extends React.Component {
 
 
         this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
-        this.handleOnHideLightbox = this.handleOnHideLightbox.bind(this);
+
     }
 
 
@@ -23,12 +23,12 @@ export class RequestListComponent extends React.Component {
     }
 
     render() {
-        const isLightboxOpened = this.props.requestState.isOpenLightboxForAdding;
+
         return (
             <div className={styles.root}>
                 <ButtonToolbar>
                     <Button bsStyle="primary" onClick={this.handleAddBtnClick}>Добавить участника</Button>
-                    <LightboxForAddingComponent show={isLightboxOpened} onHide={this.handleOnHideLightbox} />
+                    <LightboxForAddingComponent />
                 </ButtonToolbar>
                 RequestListComponent
                 <Link to='/login'>Login</Link>
@@ -39,9 +39,7 @@ export class RequestListComponent extends React.Component {
     handleAddBtnClick() {
         this.props.toggleLightbox(true);
     }
-    handleOnHideLightbox() {
-        this.props.toggleLightbox(false);
-    }
+
 
 }
 

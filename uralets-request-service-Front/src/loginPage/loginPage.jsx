@@ -22,15 +22,15 @@ export class LoginPageComponent extends React.Component{
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    
+
     render() {
     	const isAuth = this.props.user.id !== null;
         const isLoading = this.state.isLoading;
         const isAlert = this.state.alertVisible;
-		
+
 		if(isAuth){
 		 	return (<Redirect to={'/'}/>)
-		} 
+		}
 
         return ( <div style={{width:'100%'}}> 
 	        {isLoading && <div className='loader-wrapper'><div className='loader'></div></div>}

@@ -1,77 +1,70 @@
 import * as React from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import {Modal, Button, Col, Row} from 'react-bootstrap';
+import {connect} from 'react-redux'
+import {toggleLightbox, getPupilList} from '../reducers/requestReducer'
+import * as moment from 'moment';
+
 const styles = require('./lightboxForAdding.css');
 
 
 export class LightboxForAddingComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.props.getPupilList();
+
+        this.handleOnHideLightbox = this.handleOnHideLightbox.bind(this);
+
+    }
 
     render() {
-
+        const isLightboxOpened = this.props.requestState.isOpenLightboxForAdding;
+        const isPupilListLoading = this.props.requestState.isPupilListLoading;
+        const pupilList = this.props.requestState.pupilList;
         return (
             <Modal
-                {...this.props}
+                show={isLightboxOpened}
+                onHide={this.handleOnHideLightbox}
                 bsSize="large"
-                aria-labelledby="contained-modal-title-lg"
-            >
+                aria-labelledby="contained-modal-title-lg">
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-lg">Добавить участников</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h4>Wrapped Text</h4>
-                    <p>
-                        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-                        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-                        ac consectetur ac, vestibulum at eros.
-                    </p>
-                    <p>
-                        Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                        Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-                        auctor.
-                    </p>
-                    <p>
-                        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-                        cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-                        dui. Donec ullamcorper nulla non metus auctor fringilla.
-                    </p>
-                    <p>
-                        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-                        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-                        ac consectetur ac, vestibulum at eros.
-                    </p>
-                    <p>
-                        Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                        Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-                        auctor.
-                    </p>
-                    <p>
-                        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-                        cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-                        dui. Donec ullamcorper nulla non metus auctor fringilla.
-                    </p>
-                    <p>
-                        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-                        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-                        ac consectetur ac, vestibulum at eros.
-                    </p>
-                    <p>
-                        Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-                        Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor
-                        auctor.
-                    </p>
-                    <p>
-                        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo
-                        cursus magna, vel scelerisque nisl consectetur et. Donec sed odio
-                        dui. Donec ullamcorper nulla non metus auctor fringilla.
-                    </p>
+                    <div className={styles.userList}>
+                        {isPupilListLoading && <div className='loader-wrapper'>
+                            <div className='loader'></div>
+                        </div>}
+                        {pupilList.map(item => {
+                            return this.getListItem(item);
+                        })}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={this.props.onHide}>Close</Button>
+                    <Button bsStyle="primary">Добавить участников</Button>
+                    <Button onClick={this.handleOnHideLightbox}>Отмена</Button>
                 </Modal.Footer>
             </Modal>
         )
     }
 
+    getListItem(item) {
+        const momemtBirthday = moment(item.birthday);
+        const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
+
+        return <Row key={item.id}>
+            <Col xs={5}>{item.fio}</Col>
+            <Col xs={3}>{birthday}</Col>
+            <Col xs={4}>{item.trainer}</Col>
+        </Row>
+    }
+
+    handleOnHideLightbox() {
+        this.props.toggleLightbox(false);
+    }
 }
 
-export default LightboxForAddingComponent;
-
+export default connect(
+    (state) => ({requestState: state.request}),
+    {toggleLightbox, getPupilList}
+)(LightboxForAddingComponent);
