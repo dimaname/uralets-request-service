@@ -8,10 +8,11 @@ export default class CategorySelector extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedValue: '',
+            selectedValue: props.value || '',
             categoriesList: ['б/р', '3ю', '2ю', '1ю', '3', '2', '1', 'КМС', 'МС']
         };
     }
+
 
     render() {
         const selectedValue = this.state.selectedValue;
@@ -20,10 +21,10 @@ export default class CategorySelector extends React.Component {
 
         return (
             <SplitButton title={selectedValue}
-                            className={styles.dd}
-                            bsStyle={isError ? 'danger' : 'default'}
-                            id="category-dd-selector"
-                            bsSize="small">
+                         className={styles.dd}
+                         bsStyle={isError ? 'danger' : 'default'}
+                         id="category-dd-selector"
+                         bsSize="small">
                 {categoriesList.map((item, i) => {
                     return <MenuItem eventKey={i} key={i} onSelect={this.onSelectHandler.bind(this)}>{item}</MenuItem>
                 })}

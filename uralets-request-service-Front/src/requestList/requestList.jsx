@@ -72,7 +72,7 @@ export class RequestListComponent extends React.Component {
             <td>{item.fio}</td>
             <td>{birthday}</td>
             <td></td>
-            <td><CategorySelector error={item.levelError} onChange={this.updateItem.bind(this, i, 'level')}/>
+            <td><CategorySelector error={item.levelError} value={item.level} onChange={this.updateItem.bind(this, i, 'level')}/>
             </td>
             <td align="center">МО</td>
             <td>{item.trainer.fio}</td>
