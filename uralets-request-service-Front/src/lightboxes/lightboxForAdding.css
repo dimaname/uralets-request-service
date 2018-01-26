@@ -1,3 +1,11 @@
 .userList{
     min-height: 400px;
 }
+
+.checkbox{
+    display: inline;
+}
+
+.firstColumn{
+    width: 20px;
+}

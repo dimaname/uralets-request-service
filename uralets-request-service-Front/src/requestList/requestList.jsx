@@ -18,16 +18,13 @@ export class RequestListComponent extends React.Component {
     }
 
 
-    componentDidMount() {
-
-    }
-
     render() {
+        const selectedPupils = this.props.selectedPupils;
 
         return (
             <div className={styles.root}>
                 <ButtonToolbar>
-                    <Button bsStyle="primary" onClick={this.handleAddBtnClick}>Добавить участника</Button>
+                    <Button bsStyle="primary" onClick={this.handleAddBtnClick}>Добавить участников</Button>
                     <LightboxForAddingComponent />
                 </ButtonToolbar>
                 RequestListComponent

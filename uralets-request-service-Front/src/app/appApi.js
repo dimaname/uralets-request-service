@@ -18,6 +18,11 @@ export const appApi = {
       return deserialize(data.data.mens);
     });
   },
+  getTrainerList() {
+    return axios.get('/trainers', {baseURL:apiUrl, withCredentials: true}).then( data =>{
+      return deserialize(data.data.trainers);
+    });
+  },
 }
 
 const deserialize = function( {columns, records} ){

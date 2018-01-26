@@ -11,6 +11,7 @@ export class LoginPageComponent extends React.Component{
 		super(props);
 	    this.state = {
 	      isLoading: false,
+	      needRedirect: false,
 	      alertVisible: false,
 	      alertText: '',
 	      loginValid: null,
@@ -26,9 +27,10 @@ export class LoginPageComponent extends React.Component{
     render() {
     	const isAuth = this.props.user.id !== null;
         const isLoading = this.state.isLoading;
+        const needRedirect = this.state.needRedirect;
         const isAlert = this.state.alertVisible;
 
-		if(isAuth){
+		if(isAuth && needRedirect){
 		 	return (<Redirect to={'/'}/>)
 		}
 
@@ -102,10 +104,12 @@ export class LoginPageComponent extends React.Component{
 		}else{
 			this.setState({isLoading: true});
 			const userData = await this.props.loginByUsername(login, password);
-			const newState = {isLoading: false};
+			const newState = {isLoading: false, needRedirect: true};
+
 			if(userData && userData.type === 'error'){
 				let alertText = userData.message;
 				newState.alertVisible = true;
+				newState.needRedirect = false;
 				newState.alertText = alertText;
 			}
 			this.setState(newState);
