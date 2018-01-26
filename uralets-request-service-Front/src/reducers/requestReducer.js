@@ -6,6 +6,7 @@ export const trainerListSetLoading = createAction('PUPIL_TRAINER_SET_LOADING', (
 export const setPupilList = createAction('SET_PUPIL_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
+export const updateSelectedPupils = createAction('UPDATE_SELECTED_PUPILS', (data) => (data));
 
 export const getPupilList = () =>
     (dispatch, s, api) => {
@@ -81,6 +82,23 @@ const reducer = handleActions({
             ...state,
             selectedPupils,
         };
+    },
+    [updateSelectedPupils.toString()]: (state, action) => {
+        if (!action.payload) return state;
+        const index = action.payload.index;
+        const props = action.payload.props;
+        const updatedItem = {...state.selectedPupils[index], ...props};
+        const selectedPupils = [
+            ...state.selectedPupils.slice(0, index),
+            updatedItem,
+            ...state.selectedPupils.slice(index + 1)
+        ];
+
+        return {
+            ...state,
+            selectedPupils,
+        };
+
     },
 
 }, initialState);

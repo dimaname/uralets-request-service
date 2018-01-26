@@ -30,7 +30,7 @@ class App extends Component {
                 <Header/>
                 <Grid>
                     <Row className="show-grid">
-                        <Col sm={12}>
+                        <Col xs={12} sm={12}>
                             {!isLoading &&
                             <Switch>
                                 <Route path="/login" exact component={LoginPage}/>
