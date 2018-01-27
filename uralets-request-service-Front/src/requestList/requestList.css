@@ -1,50 +1,83 @@
-.root{
-    min-height: 85vh;
-    border-bottom: 1px solid #DDDDDD;
+.root {
+    margin-bottom: 80px;
 }
-.toolbarBtn{
+
+.toolbarBtn {
     margin-right: 15px;
 }
-.firstColumn{
+
+.firstColumn {
     width: 60px;
 }
-.birthdayColumn{
+
+.birthdayColumn {
     width: 130px;
 }
-.weightColumn{
+
+.weightColumn {
     width: 155px;
 }
-.levelColumn{
+
+.levelColumn {
     width: 100px;
     min-width: 100px;
 }
-.departColumn{
+
+.departColumn {
     width: 100px;
 }
-.trainerColumn{
+
+.trainerColumn {
     min-width: 150px;
 }
-.fioColumn{
+
+.fioColumn {
     min-width: 150px;
 }
-.toolbar{
+
+.toolsColumn {
+    width: 10px;
+}
+
+.toolbar {
     margin-bottom: 10px;
 }
-.table{
+
+.table {
     margin-bottom: 0px;
 }
+
 .table > tbody > tr > td,
-.table > thead > tr > th{
-     vertical-align: middle;
+.table > thead > tr > th {
+    vertical-align: middle;
+    border-top: none;
+    border-bottom: 1px solid #ddd;
 }
 
+.table > thead > tr > th {
+    border-bottom: 2px solid #ddd;
+}
 
-.table .emptyMessage{
+.table .emptyMessage {
     height: 150px;
     text-align: center;
     vertical-align: middle;
     font-size: 18px;
 }
-.weightForm{
+
+.weightForm {
     margin-bottom: 0;
+}
+
+.removeBtn {
+    color: #cccccc;
+    width: 16px;
+    padding: 0;
+}
+
+.removeBtn:hover,
+.removeBtn:active,
+.removeBtn:focus {
+    color: #d9534f;
+    outline:0 !important;
 }

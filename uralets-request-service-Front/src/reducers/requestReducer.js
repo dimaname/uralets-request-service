@@ -1,4 +1,5 @@
 import {createAction, handleActions} from 'redux-actions';
+import shortid from 'shortid';
 
 export const toggleLightbox = createAction('TOGGLE_LIGHTBOX', (data) => (data));
 export const pupilListSetLoading = createAction('PUPIL_LIST_SET_LOADING', (data) => (data));
@@ -6,6 +7,7 @@ export const trainerListSetLoading = createAction('PUPIL_TRAINER_SET_LOADING', (
 export const setPupilList = createAction('SET_PUPIL_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
+export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
 export const updateSelectedPupils = createAction('UPDATE_SELECTED_PUPILS', (data) => (data));
 
 export const getPupilList = () =>
@@ -75,9 +77,27 @@ const reducer = handleActions({
         };
     },
     [addSelectedPupils.toString()]: (state, action) => {
-        if (!action.payload) return state;
+        const newItems = action.payload;
+        if (!newItems || !newItems.length) return state;
 
-        const selectedPupils = [...state.selectedPupils, ...action.payload];
+        newItems.map(item => {
+            item.frontId = shortid.generate();
+            return item
+        });
+
+        const selectedPupils = [...state.selectedPupils, ...newItems];
+        return {
+            ...state,
+            selectedPupils,
+        };
+    },
+    [removeFromSelectedPupils.toString()]: (state, action) => {
+        if (action.payload === undefined) return state;
+        const index = action.payload;
+        const selectedPupils = [
+            ...state.selectedPupils.slice(0, index),
+            ...state.selectedPupils.slice(index + 1)
+        ];
         return {
             ...state,
             selectedPupils,
