@@ -9,7 +9,7 @@ export default class CategorySelector extends React.Component {
         super(props);
         this.state = {
             selectedValue: props.value || '',
-            categoriesList: ['б/р', '3ю', '2ю', '1ю', '3', '2', '1', 'КМС', 'МС']
+            categoriesList: ['б/р', '3ю', '2ю', '1ю', '3вз', '2вз', '1вз', 'КМС', 'МС']
         };
     }
 

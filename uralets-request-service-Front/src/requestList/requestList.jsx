@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
-import {ButtonToolbar, Button, Table, DropdownButton, MenuItem} from 'react-bootstrap';
+import {ButtonToolbar, Button, Table, FormGroup, FormControl} from 'react-bootstrap';
 import {toggleLightbox, updateSelectedPupils} from '../reducers/requestReducer'
 import LightboxForAddingComponent from '../lightboxes/lightboxForAdding'
 import CategorySelector from '../categorySelector/categorySelector'
@@ -71,8 +71,18 @@ export class RequestListComponent extends React.Component {
             <td>{i + 1}.</td>
             <td>{item.fio}</td>
             <td>{birthday}</td>
-            <td></td>
-            <td><CategorySelector error={item.levelError} value={item.level} onChange={this.updateItem.bind(this, i, 'level')}/>
+            <td><FormGroup bsSize="small" className={styles.weightForm}
+                           validationState={item.weightError && !item.weight ? 'error' : null}>
+                <FormControl
+                    type="text"
+                    value={item.weight || ''}
+                    onChange={(event) => {
+                        this.updateItem(i, 'weight', event.target.value);
+                    }}
+                />
+            </FormGroup></td>
+            <td><CategorySelector error={item.levelError} value={item.level}
+                                  onChange={this.updateItem.bind(this, i, 'level')}/>
             </td>
             <td align="center">МО</td>
             <td>{item.trainer.fio}</td>
@@ -99,10 +109,17 @@ export class RequestListComponent extends React.Component {
         const selectedPupils = this.props.requestState.selectedPupils;
         let isGood = true;
         selectedPupils.forEach((item, index) => {
-            if(!item.level){
-                this.props.updateSelectedPupils({index, props: {'levelError': true}});
+            const props = {};
+            if (!item.level) {
+                props.levelError = true;
                 isGood = false;
             }
+            if (!item.weight) {
+                props.weightError = true;
+                isGood = false;
+            }
+
+            this.props.updateSelectedPupils({index, props});
         });
 
         return isGood;

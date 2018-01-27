@@ -51,12 +51,12 @@ export class LightboxForAddingComponent extends React.Component {
                         {isLoading && <div className='loader-wrapper'>
                             <div className='loader'></div>
                         </div>}
-                        <Table striped hover>
+                        <Table striped hover className={styles.table}>
                             <thead>
-                                {this.getHeader()}
+                            {this.getHeader()}
                             </thead>
                             <tbody>
-                            {matchedPupilList.map( (item, i) => {
+                            {matchedPupilList.map((item, i) => {
                                 return this.getListItem(item, i);
                             })}
                             </tbody>
@@ -84,8 +84,12 @@ export class LightboxForAddingComponent extends React.Component {
         const momemtBirthday = moment(item.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
 
-        return <tr key={item.id} onClick={this.rowClickHandler.bind(this, item, i)}>
-            <td><Checkbox className={styles.checkbox} readOnly checked={!!item.checked}/></td>
+        return <tr key={i} onClick={this.updateMatchedPupilList.bind(this, item, i)}>
+            <td><Checkbox className={styles.checkbox} readOnly checked={!!item.checked}
+                          onClick={event => {
+                              this.updateMatchedPupilList(item, i, event.target.checked);
+                          }}
+            /></td>
             <td>{item.fio}</td>
             <td>{birthday}</td>
             <td>{item.trainer.fio}</td>
@@ -117,17 +121,20 @@ export class LightboxForAddingComponent extends React.Component {
         this.props.toggleLightbox(false);
     }
 
-    rowClickHandler(pupil, index, event){
-        event.preventDefault();
+    updateMatchedPupilList(pupil, index) {
         const matchedPupilList = this.state.matchedPupilList;
-        matchedPupilList[index] = {...pupil, checked : !pupil.checked };
+        const updatedMatchedPupilList = [
+            ...matchedPupilList.slice(0, index),
+            {...pupil, checked: !pupil.checked},
+            ...matchedPupilList.slice(index + 1)
+        ];
 
         this.setState({
-            matchedPupilList: matchedPupilList
+            matchedPupilList: updatedMatchedPupilList
         });
     }
 
-    handlePrimaryButton(){
+    handlePrimaryButton() {
         const selectedPupils = this.state.matchedPupilList.filter(item => item.checked);
         this.props.addSelectedPupils(selectedPupils);
         this.props.toggleLightbox(false);

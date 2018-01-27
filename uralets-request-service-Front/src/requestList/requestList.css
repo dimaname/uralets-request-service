@@ -33,12 +33,18 @@
 .table{
     margin-bottom: 0px;
 }
+.table > tbody > tr > td,
 .table > thead > tr > th{
      vertical-align: middle;
 }
+
+
 .table .emptyMessage{
     height: 150px;
     text-align: center;
     vertical-align: middle;
     font-size: 18px;
+}
+.weightForm{
+    margin-bottom: 0;
 }
