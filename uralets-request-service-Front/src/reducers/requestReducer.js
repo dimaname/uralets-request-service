@@ -32,6 +32,25 @@ export const getTrainerList = () =>
             return responce;
         });
     };
+export const sendRequestToServer = () =>
+    (dispatch, s, api) => {
+        //dispatch(trainerListSetLoading(true));
+
+        const state = s().request;
+        const selectedPupils = state.selectedPupils.map(item => {
+            return {
+                fio: item.fio,
+                level: item.level,
+                weight: item.weight,
+                trainerFio: item.trainer.fio,
+            }
+        });
+        return api.appApi.sendRequestToServer({selectedPupils}).then((responce) => {
+            //    dispatch(trainerListSetLoading(false));
+            debugger
+            return responce;
+        });
+    };
 
 
 const initialState = {

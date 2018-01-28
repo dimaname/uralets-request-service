@@ -15,9 +15,11 @@ class App extends Component {
         this.state = {
             isLoading: true,
         };
+
     }
 
     async componentWillMount() {
+        await this.props.getApp();
         this.setState({isLoading: false});
     }
 

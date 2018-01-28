@@ -1,5 +1,6 @@
 {
     "require": {
-        "delight-im/auth": "^7.2"
+        "delight-im/auth": "^7.2",
+        "phpoffice/phpword": "^0.14.0"
     }
 }

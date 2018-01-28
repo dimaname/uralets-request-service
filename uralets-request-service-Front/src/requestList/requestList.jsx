@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
-import {ButtonToolbar, Button, Table, FormGroup, FormControl, Glyphicon} from 'react-bootstrap';
-import {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils} from '../reducers/requestReducer'
+import {ButtonToolbar, Button, Table, FormGroup, FormControl, Glyphicon, Checkbox, Alert} from 'react-bootstrap';
+import {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils, sendRequestToServer} from '../reducers/requestReducer'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import LightboxForAddingComponent from '../lightboxes/lightboxForAdding'
 import CategorySelector from '../categorySelector/categorySelector'
-import * as moment from 'moment';
+import moment from 'moment'
 
 const styles = require('./requestList.css');
 
@@ -13,7 +13,10 @@ const styles = require('./requestList.css');
 export class RequestListComponent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            showValidationMessage: false,
+            sendWithEmptyButtonDisabled: true,
+        };
 
         this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
         this.primaryButtonHandler = this.primaryButtonHandler.bind(this);
@@ -22,6 +25,8 @@ export class RequestListComponent extends React.Component {
     render() {
         const selectedPupils = this.props.requestState.selectedPupils;
         const listIsEmpty = selectedPupils.length === 0;
+        const showValidationMessage = this.state.showValidationMessage;
+        const sendWithEmptyButtonDisabled = this.state.sendWithEmptyButtonDisabled;
         return (
             <div className={styles.root}>
                 <ButtonToolbar className={styles.toolbar}>
@@ -31,6 +36,16 @@ export class RequestListComponent extends React.Component {
                         заявку</Button>
                 </ButtonToolbar>
                 <LightboxForAddingComponent/>
+                {showValidationMessage && <Alert bsStyle="danger" onDismiss={this.handleDismiss}>
+                    <h4>Ошибка валидации!</h4>
+                    <p>
+                        Некоторые поля остались незаполненными. Заполните все пустые поля и повторите отправку.
+                    </p>
+                    <p>
+                        <Checkbox inline  checked={!sendWithEmptyButtonDisabled} onChange={this.confirmEmptySend.bind(this)}>или подтвердите отправку незаполненной формы</Checkbox>
+                        <Button bsStyle="danger" disabled={sendWithEmptyButtonDisabled} className={styles.emptySendBtn}>Отправить незаполненной</Button>
+                    </p>
+                </Alert>}
                 <Table striped className={styles.table}>
                     <thead>
                     {this.getHeader()}
@@ -74,13 +89,13 @@ export class RequestListComponent extends React.Component {
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
 
         return <tr key={item.frontId}>
-            <td>{i + 1}.{item.frontId}</td>
+            <td>{i + 1}.</td>
             <td>{item.fio}</td>
             <td>{birthday}</td>
             <td><FormGroup bsSize="small" className={styles.weightForm}
                            validationState={item.weightError && !item.weight ? 'error' : null}>
                 <FormControl
-                    type="text"
+                    type="number"
                     value={item.weight || ''}
                     onChange={(event) => {
                         this.updateItem(i, 'weight', event.target.value);
@@ -111,10 +126,21 @@ export class RequestListComponent extends React.Component {
         this.props.toggleLightbox(true);
     }
 
+    confirmEmptySend(event){
+        this.setState({
+            sendWithEmptyButtonDisabled: !event.target.checked
+        });
+    }
+
     primaryButtonHandler() {
         if (!this.validateItems()) {
+            this.setState({
+                showValidationMessage: true,
+                sendWithEmptyButtonDisabled: true
+            });
             return;
         }
+        this.props.sendRequestToServer();
     }
 
     validateItems() {
@@ -142,6 +168,6 @@ export class RequestListComponent extends React.Component {
 
 export default connect(
     (state) => ({requestState: state.request}),
-    {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils}
+    {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils, sendRequestToServer}
 )(RequestListComponent);
 

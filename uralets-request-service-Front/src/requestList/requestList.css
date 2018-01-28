@@ -81,3 +81,6 @@
     color: #d9534f;
     outline:0 !important;
 }
+.emptySendBtn{
+    margin-left: 15px;
+}

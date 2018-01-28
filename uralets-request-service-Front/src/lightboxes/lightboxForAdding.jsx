@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Modal, Button, Table, Checkbox} from 'react-bootstrap';
 import {connect} from 'react-redux'
 import {toggleLightbox, getPupilList, getTrainerList, addSelectedPupils} from '../reducers/requestReducer'
-import * as moment from 'moment';
+import moment from 'moment'
 
 const styles = require('./lightboxForAdding.css');
 

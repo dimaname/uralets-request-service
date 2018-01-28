@@ -23,6 +23,9 @@ export const appApi = {
       return deserialize(data.data.trainers);
     });
   },
+  sendRequestToServer(requestData) {
+    return axios.post('/requestBlank', {requestData}, {baseURL:apiUrl, withCredentials: true});
+  },
 }
 
 const deserialize = function( {columns, records} ){

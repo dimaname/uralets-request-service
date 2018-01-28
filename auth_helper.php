@@ -184,6 +184,18 @@ class PHP_API_AUTH {
 			$auth = $this->auth;
 			$auth->logOutAndDestroySession();
 			return true;
+		}else if($method=='POST' && 'requestBlank' == $request){
+			$auth = $this->auth;
+			$responce = array(); 
+			if ($auth->isLoggedIn() && $auth->isNormal() ){
+				$responce['requestBlankData'] = $_POST;
+				$responce['status'] = 'ok';	
+			}else{
+				$responce['status'] = 'error';
+			}
+		
+			echo json_encode($responce);
+			return true;
 		}
 		return false;
 	}
