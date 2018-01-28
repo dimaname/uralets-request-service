@@ -16,6 +16,7 @@ class ComposerStaticInit0830eea2a89d540ef86d6cae526189bd
         array (
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\Common\\' => 17,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'D' => 
         array (
@@ -43,6 +44,10 @@ class ComposerStaticInit0830eea2a89d540ef86d6cae526189bd
         'PhpOffice\\Common\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/common/src/Common',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Delight\\Http\\' => 
         array (
