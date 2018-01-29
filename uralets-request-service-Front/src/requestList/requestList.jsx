@@ -1,7 +1,12 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
 import {ButtonToolbar, Button, Table, FormGroup, FormControl, Glyphicon, Checkbox, Alert} from 'react-bootstrap';
-import {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils, sendRequestToServer} from '../reducers/requestReducer'
+import {
+    toggleLightbox,
+    updateSelectedPupils,
+    removeFromSelectedPupils,
+    sendRequestToServer
+} from '../reducers/requestReducer'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import LightboxForAddingComponent from '../lightboxes/lightboxForAdding'
 import CategorySelector from '../categorySelector/categorySelector'
@@ -20,6 +25,7 @@ export class RequestListComponent extends React.Component {
 
         this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
         this.primaryButtonHandler = this.primaryButtonHandler.bind(this);
+        this.emptySendButtonHandler = this.emptySendButtonHandler.bind(this);
     }
 
     render() {
@@ -42,8 +48,11 @@ export class RequestListComponent extends React.Component {
                         Некоторые поля остались незаполненными. Заполните все пустые поля и повторите отправку.
                     </p>
                     <p>
-                        <Checkbox inline  checked={!sendWithEmptyButtonDisabled} onChange={this.confirmEmptySend.bind(this)}>или подтвердите отправку незаполненной формы</Checkbox>
-                        <Button bsStyle="danger" disabled={sendWithEmptyButtonDisabled} className={styles.emptySendBtn}>Отправить незаполненной</Button>
+                        <Checkbox inline checked={!sendWithEmptyButtonDisabled}
+                                  onChange={this.confirmEmptySend.bind(this)}>или подтвердите отправку незаполненной
+                            формы</Checkbox>
+                        <Button bsStyle="danger" disabled={sendWithEmptyButtonDisabled} className={styles.emptySendBtn}
+                                onClick={this.emptySendButtonHandler}>Отправить незаполненной</Button>
                     </p>
                 </Alert>}
                 <Table striped className={styles.table}>
@@ -126,7 +135,7 @@ export class RequestListComponent extends React.Component {
         this.props.toggleLightbox(true);
     }
 
-    confirmEmptySend(event){
+    confirmEmptySend(event) {
         this.setState({
             sendWithEmptyButtonDisabled: !event.target.checked
         });
@@ -140,6 +149,15 @@ export class RequestListComponent extends React.Component {
             });
             return;
         }
+        this.props.sendRequestToServer();
+    }
+
+    emptySendButtonHandler() {
+        this.setState({
+            showValidationMessage: false,
+            sendWithEmptyButtonDisabled: true
+        });
+
         this.props.sendRequestToServer();
     }
 

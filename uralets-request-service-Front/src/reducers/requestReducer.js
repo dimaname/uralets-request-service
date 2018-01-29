@@ -1,5 +1,6 @@
 import {createAction, handleActions} from 'redux-actions';
 import shortid from 'shortid';
+import moment from 'moment'
 
 export const toggleLightbox = createAction('TOGGLE_LIGHTBOX', (data) => (data));
 export const pupilListSetLoading = createAction('PUPIL_LIST_SET_LOADING', (data) => (data));
@@ -36,10 +37,14 @@ export const sendRequestToServer = () =>
     (dispatch, s, api) => {
         //dispatch(trainerListSetLoading(true));
 
+
         const state = s().request;
         const selectedPupils = state.selectedPupils.map(item => {
+            const momemtBirthday = moment(item.birthday);
+            const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
             return {
                 fio: item.fio,
+                birthday: birthday,
                 level: item.level,
                 weight: item.weight,
                 trainerFio: item.trainer.fio,
@@ -47,7 +52,7 @@ export const sendRequestToServer = () =>
         });
         return api.appApi.sendRequestToServer({selectedPupils}).then((responce) => {
             //    dispatch(trainerListSetLoading(false));
-            debugger
+            debugger;
             return responce;
         });
     };

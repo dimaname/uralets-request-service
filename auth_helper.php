@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 //var_dump($_SERVER['REQUEST_METHOD'],$_SERVER['PATH_INFO']); die();
 class PHP_API_AUTH {
 	
@@ -187,9 +187,22 @@ class PHP_API_AUTH {
 		}else if($method=='POST' && 'requestBlank' == $request){
 			$auth = $this->auth;
 			$responce = array(); 
-			if ($auth->isLoggedIn() && $auth->isNormal() ){
-				$responce['requestBlankData'] = $_POST;
-				$responce['status'] = 'ok';	
+			if ( true || $auth->isLoggedIn() && $auth->isNormal() ){
+			
+				$blankData = $this->retrieveInput($post)->requestData;				
+			
+				$docPath = printDoc($blankData);
+				
+				if(!$docPath){
+					$responce['status'] = 'print error';	
+				}else{
+					$mailInfo = sendFileToMail($docPath);					
+					$responce['mailInfo'] = $mailInfo;
+					if($mailInfo === TRUE){
+						$responce['status'] = 'ok';	
+					}	
+					unlink($docPath);
+				}
 			}else{
 				$responce['status'] = 'error';
 			}
@@ -200,3 +213,78 @@ class PHP_API_AUTH {
 		return false;
 	}
 }
+
+
+
+function printDoc($blankData){	
+	if(!is_array($blankData->selectedPupils) )
+		return false;
+
+	$templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor('docs/Template.docx');
+	$index = 1;	
+	$dataLength = count($blankData->selectedPupils);
+	$templateProcessor->cloneRow('rowNumber', $dataLength);
+
+	foreach($blankData->selectedPupils as $row){
+		if(!isset($row->fio)) return;
+		$rowNumber = $index;
+		$rowFIO = $row->fio;
+		$rowBirthday = isset($row->birthday) ? $row->birthday : '';
+		$rowWeight = isset($row->weight) ? $row->weight: '';
+		$rowLevel = isset($row->level) ? $row->level: '';
+		$rowTrainerFIO = isset($row->trainerFio) ? $row->trainerFio: '';
+	
+		$templateProcessor->setValue('rowNumber#'.$index, $rowNumber);
+		$templateProcessor->setValue('rowFIO#'.$index, $rowFIO);
+		$templateProcessor->setValue('rowBirthday#'.$index, $rowBirthday);
+		$templateProcessor->setValue('rowWeight#'.$index, $rowWeight);
+		$templateProcessor->setValue('rowLevel#'.$index, $rowLevel);
+		$templateProcessor->setValue('rowTrainerFIO#'.$index, $rowTrainerFIO);
+		
+		$index++;
+	}
+	$filePath = 'docs/printed/Заявка_'.date("d_m_Y__H_i_s").'.docx';
+	$templateProcessor->saveAs($filePath );	
+	return $filePath ;
+
+}
+
+
+function sendFileToMail($filepath){
+	
+	if (!file_exists($filepath)) {
+		return "file not found ".$filepath;
+	} 
+
+	$mail = new PHPMailer\PHPMailer\PHPMailer(true);                            
+	try {
+		//Server settings
+	            
+			
+		$mail->CharSet = 'UTF-8';
+		$mail->setLanguage('ru');			
+		$mail->isSMTP();  //      $mail->isMail();                      // Set mailer to use SMTP
+		$mail->Host = 'server138.hosting.reg.ru';             // Specify main and backup SMTP servers
+		$mail->SMTPAuth = true;                     // Enable SMTP authentication
+		$mail->Username = 'admin@scuralets.ru';          // SMTP username
+		$mail->Password = ''; // SMTP password
+		$mail->SMTPSecure = 'tls';                  // Enable TLS encryption, `ssl` also accepted
+		$mail->Port = 587;        
+				
+		
+		//Recipients
+		$mail->setFrom('from@example.com', 'Your Name');
+		$mail->addAddress('judamigo@yandex.ru');     
+		$mail->addAddress('dimaname@gmail.com');     
+        $mail->Subject = "Заявка на соревнование";
+        $mail->Body   = "Здесь будет {shortTitle}";
+        $mail->AddAttachment( $filepath, 'Заявка.docx' );        
+        $mail->Send();
+		return true;
+	
+	} catch (Exception $e) {
+		return 'Message could not be sent. Mailer Error: '. $mail->ErrorInfo;
+	}
+	
+}
+

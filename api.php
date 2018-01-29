@@ -2680,8 +2680,8 @@ $auth = new \Delight\Auth\Auth($db);
 $authHook = new PHP_API_AUTH($auth);
 
  
- 
-
+  
+  
 	if ($authHook->executeCommand()) exit(0);
 	if (!$auth->isLoggedIn()){	
 		$x = pathinfo($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);	
@@ -2696,6 +2696,6 @@ $authHook = new PHP_API_AUTH($auth);
  	'password'=>'',
  	'database'=>'service-x',
  	'charset'=>'utf8',
-	'table_authorizer'=>function($cmd,$db,$tab) { return $tab == 'units' ; },
+	'table_authorizer'=>function($cmd,$db,$tab) { return $tab == 'mens' || $tab == 'trainers' ; },
  ));
  $api->executeCommand();
