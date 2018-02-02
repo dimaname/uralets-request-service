@@ -89,7 +89,7 @@ export class RequestListComponent extends React.Component {
             <th className={styles.levelColumn}>Разряд</th>
             <th className={styles.departColumn}>Ведомство</th>
             <th className={styles.trainerColumn}>Тренер</th>
-            <th className={styles.toolsColumn}></th>
+            <th className={styles.toolsColumn}> </th>
         </tr>
     }
 
