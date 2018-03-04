@@ -15,12 +15,12 @@ export const appApi = {
     },
     getPupilList() {
         return axios.get('/mens', {baseURL: apiUrl, withCredentials: true}).then(data => {
-            return deserialize(data.data.mens);
+            return {result: deserialize(data.data.mens), columns: data.data.mens.columns};
         });
     },
     getTrainerList() {
         return axios.get('/trainers', {baseURL: apiUrl, withCredentials: true}).then(data => {
-            return deserialize(data.data.trainers);
+            return {result: deserialize(data.data.trainers), columns: data.data.trainers.columns};
         });
     },
     sendRequestToServer(requestData) {
@@ -30,6 +30,11 @@ export const appApi = {
                 throw new Error(statusMessage);
             }
             return status;
+        });
+    },
+    addPupilsToList(data = {}){
+        return axios.post('/mens',data, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return deserialize(data.data.mens);
         });
     },
 };

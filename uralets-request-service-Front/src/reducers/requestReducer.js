@@ -10,14 +10,21 @@ export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data))
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
 export const updateSelectedPupils = createAction('UPDATE_SELECTED_PUPILS', (data) => (data));
+export const setTrainerModel = createAction('SET_TRAINERS_MODEL', (data) => (data));
+export const setPupilModel = createAction('SET_PUPIL_MODEL', (data) => (data));
 
 export const getPupilList = () =>
     (dispatch, s, api) => {
         dispatch(pupilListSetLoading(true));
         return api.appApi.getPupilList().then((responce) => {
             dispatch(pupilListSetLoading(false));
-            if (Array.isArray(responce) && responce.length) {
-                dispatch(setPupilList(responce));
+            const pupilsList = responce.result;
+            const pupilsColumns = responce.columns;
+            if (Array.isArray(pupilsList) && pupilsList.length) {
+                dispatch(setPupilList(pupilsList));
+            }
+            if (Array.isArray(pupilsColumns) && pupilsColumns.length) {
+                dispatch(setPupilModel(pupilsColumns));
             }
             return responce;
         });
@@ -27,8 +34,13 @@ export const getTrainerList = () =>
         dispatch(trainerListSetLoading(true));
         return api.appApi.getTrainerList().then((responce) => {
             dispatch(trainerListSetLoading(false));
-            if (Array.isArray(responce) && responce.length) {
-                dispatch(setTrainerList(responce));
+            const trainersList = responce.result;
+            const trainersColumns = responce.columns;
+            if (Array.isArray(trainersList) && trainersList.length) {
+                dispatch(setTrainerList(trainersList));
+            }
+            if (Array.isArray(trainersColumns) && trainersColumns.length) {
+                dispatch(setTrainerModel(trainersColumns));
             }
             return responce;
         });
@@ -56,9 +68,11 @@ const initialState = {
     isPupilListLoading: false,
     isPupilListReady: false,
     pupilList: [],
+    pupilModel: [],
     isTrainerListLoading: false,
     isTrainerListReady: false,
     trainerList: [],
+    trainerModel: [],
     selectedPupils: [],
 };
 
@@ -81,6 +95,12 @@ const reducer = handleActions({
             isPupilListReady: true,
         };
     },
+    [setPupilModel.toString()]: (state, action) => {
+        return {
+            ...state,
+            pupilModel: action.payload,
+        };
+    },
     [trainerListSetLoading.toString()]: (state, action) => {
         return {
             ...state, isTrainerListLoading: action.payload,
@@ -91,6 +111,12 @@ const reducer = handleActions({
             ...state,
             trainerList: action.payload,
             isTrainerListReady: true,
+        };
+    },
+    [setTrainerModel.toString()]: (state, action) => {
+        return {
+            ...state,
+            trainerModel: action.payload,
         };
     },
     [addSelectedPupils.toString()]: (state, action) => {
