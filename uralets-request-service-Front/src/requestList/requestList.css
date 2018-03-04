@@ -1,5 +1,6 @@
 .root {
     margin-bottom: 80px;
+    min-height: 45vh;
 }
 
 .toolbarBtn {
@@ -40,7 +41,7 @@
 }
 
 .toolbar {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .table {

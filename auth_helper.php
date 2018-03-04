@@ -187,25 +187,31 @@ class PHP_API_AUTH {
 		}else if($method=='POST' && 'requestBlank' == $request){
 			$auth = $this->auth;
 			$responce = array(); 
+			$isError = false;
+			$errorText = '';
 			if ( true || $auth->isLoggedIn() && $auth->isNormal() ){
 			
-				$blankData = $this->retrieveInput($post)->requestData;				
-			
+				$blankData = $this->retrieveInput($post)->requestData;	
 				$docPath = printDoc($blankData);
 				
 				if(!$docPath){
-					$responce['status'] = 'print error';	
+					$isError = true;
+					$errorText = 'print error';	
 				}else{
 					$mailInfo = sendFileToMail($docPath);					
-					$responce['mailInfo'] = $mailInfo;
-					if($mailInfo === TRUE){
-						$responce['status'] = 'ok';	
+					
+					if($mailInfo !== TRUE){					
+						$isError = true;
+						$errorText = 'mail error: '.$mailInfo;	
 					}	
 					unlink($docPath);
 				}
 			}else{
-				$responce['status'] = 'error';
+				$isError = true;
+				$errorText = 'auth error';	
 			}
+			$responce['status'] = $isError ? 'error' : 'ok';
+			$responce['statusMessage'] = $errorText ? $errorText : 'request is ok';
 		
 			echo json_encode($responce);
 			return true;
@@ -267,14 +273,14 @@ function sendFileToMail($filepath){
 		$mail->Host = 'server138.hosting.reg.ru';             // Specify main and backup SMTP servers
 		$mail->SMTPAuth = true;                     // Enable SMTP authentication
 		$mail->Username = 'admin@scuralets.ru';          // SMTP username
-		$mail->Password = ''; // SMTP password
+		$mail->Password = 'Hvxyw372'; // SMTP password
 		$mail->SMTPSecure = 'tls';                  // Enable TLS encryption, `ssl` also accepted
 		$mail->Port = 587;        
 				
 		
 		//Recipients
-		$mail->setFrom('from@example.com', 'Your Name');
-		$mail->addAddress('judamigo@yandex.ru');     
+		$mail->setFrom('admin@scuralets.ru', 'Administrator');
+		//$mail->addAddress('judamigo@yandex.ru');     
 		$mail->addAddress('dimaname@gmail.com');     
         $mail->Subject = "Заявка на соревнование";
         $mail->Body   = "Здесь будет {shortTitle}";

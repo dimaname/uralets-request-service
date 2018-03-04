@@ -21,6 +21,10 @@ export class RequestListComponent extends React.Component {
         this.state = {
             showValidationMessage: false,
             sendWithEmptyButtonDisabled: true,
+            isSending: false,
+            isSuccessSendingMessage: false,
+            isErrorSendingMessage: false,
+            sendingErrorText: '',
         };
 
         this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
@@ -31,18 +35,66 @@ export class RequestListComponent extends React.Component {
     render() {
         const selectedPupils = this.props.requestState.selectedPupils;
         const listIsEmpty = selectedPupils.length === 0;
-        const showValidationMessage = this.state.showValidationMessage;
-        const sendWithEmptyButtonDisabled = this.state.sendWithEmptyButtonDisabled;
+        const isSending = this.state.isSending;
+
         return (
             <div className={styles.root}>
+                <LightboxForAddingComponent/>
+                {isSending && <div className='loader-wrapper'>
+                    <div className='loader'/>
+                </div>}
                 <ButtonToolbar className={styles.toolbar}>
                     <Button bsStyle="primary" onClick={this.handleAddBtnClick} className={styles.toolbarBtn}>Добавить
                         участников</Button>
                     <Button bsStyle="success" onClick={this.primaryButtonHandler} disabled={listIsEmpty}>Отправить
                         заявку</Button>
                 </ButtonToolbar>
-                <LightboxForAddingComponent/>
-                {showValidationMessage && <Alert bsStyle="danger" onDismiss={this.handleDismiss}>
+                {this.showAlerts()}
+
+                <Table striped className={styles.table}>
+                    <thead>
+                    {this.getHeader()}
+                    </thead>
+                    <ReactCSSTransitionGroup
+                        transitionName="fade"
+                        transitionEnterTimeout={500}
+                        transitionLeaveTimeout={300}
+                        component="tbody"
+                    >
+                        {listIsEmpty && <tr>
+                            <td colSpan='7' className={styles.emptyMessage}>Добавьте участников соревнования чтобы
+                                сформировать заявочный лист
+                            </td>
+                        </tr>}
+                        {selectedPupils.map((item, i) => {
+                            return this.getTableRow(item, i);
+                        })}
+                    </ReactCSSTransitionGroup>
+                </Table>
+            </div>
+        )
+    }
+
+    showAlerts() {
+        const showValidationMessage = this.state.showValidationMessage;
+        const sendWithEmptyButtonDisabled = this.state.sendWithEmptyButtonDisabled;
+        const isSuccessSendingMessage = this.state.isSuccessSendingMessage;
+        const isErrorSendingMessage = this.state.isErrorSendingMessage;
+        const sendingErrorText = this.state.sendingErrorText;
+
+        return (<div>
+                {isSuccessSendingMessage && <Alert bsStyle="success">
+                    <strong>Заявка успешно отправлена!</strong>
+                </Alert>}
+                {isErrorSendingMessage && <Alert bsStyle="danger">
+                    <strong><Glyphicon glyph="exclamation-sign"/> Внимание! </strong>
+                    Произошла ошибка при отправке заявки. Попробуйте ещё раз или обратитесь к администратору сервиса.
+                    {sendingErrorText && <div>
+                        <h5>Текст ошибки:</h5>
+                        <code>{sendingErrorText}</code>
+                    </div>}
+                </Alert>}
+                {showValidationMessage && <Alert bsStyle="danger">
                     <h4>Ошибка валидации!</h4>
                     <p>
                         Некоторые поля остались незаполненными. Заполните все пустые поля и повторите отправку.
@@ -55,29 +107,8 @@ export class RequestListComponent extends React.Component {
                                 onClick={this.emptySendButtonHandler}>Отправить незаполненной</Button>
                     </p>
                 </Alert>}
-                <Table striped className={styles.table}>
-                    <thead>
-                    {this.getHeader()}
-                    </thead>
-                    <ReactCSSTransitionGroup
-                        transitionName="fade"
-                        transitionEnterTimeout={500}
-                        transitionLeaveTimeout={300}
-                        component="tbody"
-                    >
-                        {listIsEmpty && <tr>
-                            <td colSpan='7' className={styles.emptyMessage}>Добавьте учатников соревнования чтобы
-                                сформировать заявочный лист
-                            </td>
-                        </tr>}
-                        {selectedPupils.map((item, i) => {
-                            return this.getTableRow(item, i);
-                        })}
-                    </ReactCSSTransitionGroup>
-                </Table>
-
             </div>
-        )
+        );
     }
 
     getHeader() {
@@ -89,7 +120,7 @@ export class RequestListComponent extends React.Component {
             <th className={styles.levelColumn}>Разряд</th>
             <th className={styles.departColumn}>Ведомство</th>
             <th className={styles.trainerColumn}>Тренер</th>
-            <th className={styles.toolsColumn}> </th>
+            <th className={styles.toolsColumn}></th>
         </tr>
     }
 
@@ -104,7 +135,7 @@ export class RequestListComponent extends React.Component {
             <td><FormGroup bsSize="small" className={styles.weightForm}
                            validationState={item.weightError && !item.weight ? 'error' : null}>
                 <FormControl
-                    type="number"
+                    type="text"
                     value={item.weight || ''}
                     onChange={(event) => {
                         this.updateItem(i, 'weight', event.target.value);
@@ -145,20 +176,47 @@ export class RequestListComponent extends React.Component {
         if (!this.validateItems()) {
             this.setState({
                 showValidationMessage: true,
-                sendWithEmptyButtonDisabled: true
+                sendWithEmptyButtonDisabled: true,
+                isSuccessSendingMessage: false,
+                isErrorSendingMessage: false,
+                sendingErrorText: '',
             });
             return;
+        } else {
+            this.setState({
+                showValidationMessage: false,
+                isSending: true,
+            });
         }
-        this.props.sendRequestToServer();
+        this.sendRequestList();
     }
 
     emptySendButtonHandler() {
         this.setState({
             showValidationMessage: false,
-            sendWithEmptyButtonDisabled: true
+            sendWithEmptyButtonDisabled: true,
+            isSending: true,
         });
 
-        this.props.sendRequestToServer();
+        this.sendRequestList();
+    }
+
+    async sendRequestList() {
+        this.setState({isSuccessSendingMessage: false, isErrorSendingMessage: false, sendingErrorText: ''});
+        const newState = {};
+        try {
+            await this.props.sendRequestToServer();
+            this.clearItmesErrors();
+            newState.isSending = false;
+            newState.isSuccessSendingMessage = true;
+
+        } catch (e) {
+            newState.isSending = false;
+            newState.isErrorSendingMessage = true;
+            newState.sendingErrorText = e.message;
+        }
+        this.setState(newState);
+
     }
 
     validateItems() {
@@ -174,6 +232,21 @@ export class RequestListComponent extends React.Component {
                 props.weightError = true;
                 isGood = false;
             }
+
+            this.props.updateSelectedPupils({index, props});
+        });
+
+        return isGood;
+    }
+
+    clearItmesErrors() {
+        const selectedPupils = this.props.requestState.selectedPupils;
+        let isGood = true;
+        selectedPupils.forEach((item, index) => {
+            const props = {
+                levelError: false,
+                weightError: false,
+            };
 
             this.props.updateSelectedPupils({index, props});
         });

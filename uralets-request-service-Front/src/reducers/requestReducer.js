@@ -35,9 +35,6 @@ export const getTrainerList = () =>
     };
 export const sendRequestToServer = () =>
     (dispatch, s, api) => {
-        //dispatch(trainerListSetLoading(true));
-
-
         const state = s().request;
         const selectedPupils = state.selectedPupils.map(item => {
             const momemtBirthday = moment(item.birthday);
@@ -50,11 +47,7 @@ export const sendRequestToServer = () =>
                 trainerFio: item.trainer.fio,
             }
         });
-        return api.appApi.sendRequestToServer({selectedPupils}).then((responce) => {
-            //    dispatch(trainerListSetLoading(false));
-            debugger;
-            return responce;
-        });
+        return api.appApi.sendRequestToServer({selectedPupils});
     };
 
 
