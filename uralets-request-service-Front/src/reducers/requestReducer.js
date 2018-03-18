@@ -12,6 +12,7 @@ export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (
 export const updateSelectedPupils = createAction('UPDATE_SELECTED_PUPILS', (data) => (data));
 export const setTrainerModel = createAction('SET_TRAINERS_MODEL', (data) => (data));
 export const setPupilModel = createAction('SET_PUPIL_MODEL', (data) => (data));
+export const setCompetitionTitle = createAction('SET_COMPETITION_TITLE', (data) => (data));
 
 export const getPupilList = () =>
     (dispatch, s, api) => {
@@ -48,6 +49,7 @@ export const getTrainerList = () =>
 export const sendRequestToServer = () =>
     (dispatch, s, api) => {
         const state = s().request;
+        const competitionTitle = state.competitionTitle;
         const selectedPupils = state.selectedPupils.map(item => {
             const momemtBirthday = moment(item.birthday);
             const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
@@ -59,7 +61,7 @@ export const sendRequestToServer = () =>
                 trainerFio: item.trainer.fio,
             }
         });
-        return api.appApi.sendRequestToServer({selectedPupils});
+        return api.appApi.sendRequestToServer({selectedPupils, competitionTitle});
     };
 
 
@@ -74,6 +76,7 @@ const initialState = {
     trainerList: [],
     trainerModel: [],
     selectedPupils: [],
+    competitionTitle: '',
 };
 
 
@@ -104,6 +107,11 @@ const reducer = handleActions({
     [trainerListSetLoading.toString()]: (state, action) => {
         return {
             ...state, isTrainerListLoading: action.payload,
+        };
+    },
+    [setCompetitionTitle.toString()]: (state, action) => {
+        return {
+            ...state, competitionTitle: action.payload,
         };
     },
     [setTrainerList.toString()]: (state, action) => {

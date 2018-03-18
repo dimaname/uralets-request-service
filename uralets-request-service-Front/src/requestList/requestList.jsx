@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
-import {ButtonToolbar, Button, Table, FormGroup, FormControl, Glyphicon, Checkbox, Alert} from 'react-bootstrap';
+import {ButtonToolbar, Button, Table, Form, FormGroup, FormControl, Glyphicon, Checkbox, Alert, ControlLabel, Col} from 'react-bootstrap';
 import {
     toggleLightbox,
     updateSelectedPupils,
     removeFromSelectedPupils,
+    setCompetitionTitle,
     sendRequestToServer
 } from '../reducers/requestReducer'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
@@ -24,6 +25,7 @@ export class RequestListComponent extends React.Component {
             isSending: false,
             isSuccessSendingMessage: false,
             isErrorSendingMessage: false,
+            competitionTitleError: false,
             sendingErrorText: '',
         };
 
@@ -33,7 +35,7 @@ export class RequestListComponent extends React.Component {
     }
 
     render() {
-        const selectedPupils = this.props.requestState.selectedPupils;
+        const {selectedPupils} = this.props.requestState;
         const listIsEmpty = selectedPupils.length === 0;
         const isSending = this.state.isSending;
 
@@ -50,6 +52,7 @@ export class RequestListComponent extends React.Component {
                         заявку</Button>
                 </ButtonToolbar>
                 {this.showAlerts()}
+                {this.renderCompetitionTitle()}
 
                 <Table striped className={styles.table}>
                     <thead>
@@ -73,6 +76,27 @@ export class RequestListComponent extends React.Component {
                 </Table>
             </div>
         )
+    }
+
+    renderCompetitionTitle(){
+        const {competitionTitle} = this.props.requestState;
+        const competitionTitleError = this.state.competitionTitleError;
+
+        return <Form horizontal>
+            <Col componentClass={ControlLabel} sm={3}>
+                Краткое название соревнования
+            </Col>
+            <Col sm={8}>
+                <FormGroup bsSize="small" validationState={competitionTitleError ? 'error' : null}>
+                    <FormControl
+                        type="text"
+                        maxLength="150"
+                        value={competitionTitle}
+                        onChange={this.competitionTitleHandler}
+                    />
+                </FormGroup>
+            </Col>
+        </Form>
     }
 
     showAlerts() {
@@ -120,7 +144,7 @@ export class RequestListComponent extends React.Component {
             <th className={styles.levelColumn}>Разряд</th>
             <th className={styles.departColumn}>Ведомство</th>
             <th className={styles.trainerColumn}>Тренер</th>
-            <th className={styles.toolsColumn}></th>
+            <th className={styles.toolsColumn}> </th>
         </tr>
     }
 
@@ -136,6 +160,7 @@ export class RequestListComponent extends React.Component {
                            validationState={item.weightError && !item.weight ? 'error' : null}>
                 <FormControl
                     type="text"
+                    maxLength="20"
                     value={item.weight || ''}
                     onChange={(event) => {
                         this.updateItem(i, 'weight', event.target.value);
@@ -162,6 +187,14 @@ export class RequestListComponent extends React.Component {
         this.props.updateSelectedPupils({index, props: {[propName]: value}});
     }
 
+    competitionTitleHandler = (event) => {
+        const competitionTitleError = this.state.competitionTitleError;
+        if (competitionTitleError) {
+            this.setState({competitionTitleError: false});
+        }
+        this.props.setCompetitionTitle(event.target.value);
+    };
+
     handleAddBtnClick() {
         this.props.toggleLightbox(true);
     }
@@ -173,7 +206,7 @@ export class RequestListComponent extends React.Component {
     }
 
     primaryButtonHandler() {
-        if (!this.validateItems()) {
+        if (!this.validateFormFields()) {
             this.setState({
                 showValidationMessage: true,
                 sendWithEmptyButtonDisabled: true,
@@ -219,8 +252,8 @@ export class RequestListComponent extends React.Component {
 
     }
 
-    validateItems() {
-        const selectedPupils = this.props.requestState.selectedPupils;
+    validateFormFields() {
+        const {selectedPupils, competitionTitle} = this.props.requestState;
         let isGood = true;
         selectedPupils.forEach((item, index) => {
             const props = {};
@@ -235,6 +268,11 @@ export class RequestListComponent extends React.Component {
 
             this.props.updateSelectedPupils({index, props});
         });
+
+        if (competitionTitle.length === 0) {
+            this.setState({competitionTitleError: true});
+            isGood = false;
+        }
 
         return isGood;
     }
@@ -253,12 +291,11 @@ export class RequestListComponent extends React.Component {
 
         return isGood;
     }
-
 }
 
 
 export default connect(
     (state) => ({requestState: state.request}),
-    {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils, sendRequestToServer}
+    {toggleLightbox, updateSelectedPupils, removeFromSelectedPupils, sendRequestToServer, setCompetitionTitle}
 )(RequestListComponent);
 

@@ -2696,6 +2696,6 @@ $authHook = new PHP_API_AUTH($auth);
  	'password'=>'',
  	'database'=>'service-x',
  	'charset'=>'utf8',
-	'table_authorizer'=>function($cmd,$db,$tab) { return $tab == 'mens' || $tab == 'trainers' ; },
+	'table_authorizer'=>function($cmd,$db,$tab) { return $tab == 'mens' || $tab == 'trainers'; },
  ));
  $api->executeCommand();

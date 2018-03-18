@@ -60,11 +60,9 @@ export default connect(
 class AddRecordComponent extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {
-
         return (
             <div>
                 <FormGroup controlId="newFields">

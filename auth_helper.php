@@ -198,7 +198,7 @@ class PHP_API_AUTH {
 					$isError = true;
 					$errorText = 'print error';	
 				}else{
-					$mailInfo = sendFileToMail($docPath);					
+					$mailInfo = sendFileToMail($blankData, $docPath);					
 					
 					if($mailInfo !== TRUE){					
 						$isError = true;
@@ -228,7 +228,7 @@ function printDoc($blankData){
 
 	$templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor('docs/Template.docx');
 	$index = 1;	
-	$dataLength = count($blankData->selectedPupils);
+	$dataLength = count($blankData->selectedPupils);	
 	$templateProcessor->cloneRow('rowNumber', $dataLength);
 
 	foreach($blankData->selectedPupils as $row){
@@ -249,23 +249,29 @@ function printDoc($blankData){
 		
 		$index++;
 	}
+	
+	$competitionTitle = $blankData->competitionTitle;
+	$templateProcessor->setValue('shortTitle', $competitionTitle);
+	
+	
 	$filePath = 'docs/printed/Заявка_'.date("d_m_Y__H_i_s").'.docx';
 	$templateProcessor->saveAs($filePath );	
 	return $filePath ;
 
 }
 
-
-function sendFileToMail($filepath){
+function sendFileToMail($blankData, $filepath){
 	
 	if (!file_exists($filepath)) {
-		return "file not found ".$filepath;
+		$errorText = "file not found ".$filepath;
+		logger($errorText);
+		return $errorText;
 	} 
 
 	$mail = new PHPMailer\PHPMailer\PHPMailer(true);                            
 	try {
-		//Server settings
-	            
+		$competitionTitle = $blankData->competitionTitle;   
+		//Server settings	      
 			
 		$mail->CharSet = 'UTF-8';
 		$mail->setLanguage('ru');			
@@ -273,24 +279,35 @@ function sendFileToMail($filepath){
 		$mail->Host = 'server138.hosting.reg.ru';             // Specify main and backup SMTP servers
 		$mail->SMTPAuth = true;                     // Enable SMTP authentication
 		$mail->Username = 'admin@scuralets.ru';          // SMTP username
-		$mail->Password = 'Hvxyw372'; // SMTP password
+		$mail->Password = ''; // SMTP password
 		$mail->SMTPSecure = 'tls';                  // Enable TLS encryption, `ssl` also accepted
 		$mail->Port = 587;        
 				
-		
+	  
 		//Recipients
 		$mail->setFrom('admin@scuralets.ru', 'Administrator');
 		//$mail->addAddress('judamigo@yandex.ru');     
 		$mail->addAddress('dimaname@gmail.com');     
         $mail->Subject = "Заявка на соревнование";
-        $mail->Body   = "Здесь будет {shortTitle}";
-        $mail->AddAttachment( $filepath, 'Заявка.docx' );        
+        $mail->Body   = "Название соревнования: ".$competitionTitle;
+        $mail->AddAttachment( $filepath, 'Заявка_'.$competitionTitle.'.docx' );        
         $mail->Send();
+		
+		logger('mail was sent:Заявка_'.$competitionTitle.'.docx');
+		
 		return true;
 	
 	} catch (Exception $e) {
-		return 'Message could not be sent. Mailer Error: '. $mail->ErrorInfo;
+		$errorText = 'Message could not be sent. Mailer Error: '. $mail->ErrorInfo;
+		logger($errorText);
+		return $errorText;
 	}
 	
 }
 
+function logger($txt){	
+    $txt = date('Y.m.d H:i:s ', time()).$txt.PHP_EOL;
+	$logFile = fopen("logs.txt", "a");		
+	fwrite($logFile, $txt);
+	fclose($logFile);	
+}
