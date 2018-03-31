@@ -176,3 +176,16 @@ const reducer = handleActions({
 
 
 export default reducer;
+
+
+export function matchPupilAndTrainer(pupilList = [], treainerList = []) {
+        const trainerByIds = treainerList.reduce((result, trainer) => {
+            result[trainer.id] = trainer;
+            return result;
+        }, {});
+
+        return pupilList.map(pupil => {
+            const trainerObj = trainerByIds[pupil.trainer] || {};
+            return {...pupil, trainer: trainerObj};
+        })
+}
