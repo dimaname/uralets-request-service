@@ -20,3 +20,45 @@
     vertical-align: middle;
     font-size: 18px;
 }
+.fioColumn {
+    min-width: 150px;
+}
+.trainerColumn {
+    min-width: 150px;
+}
+.toolsColumn {
+    width: 60px;
+}
+.removeBtn {
+	display: inline-block;
+    color: #cccccc;
+    width: 16px;
+    padding: 0;
+}
+
+.removeBtn:hover,
+.removeBtn:active,
+.removeBtn:focus {
+    color: #d9534f;
+    outline:0 !important;
+}
+.editBtn {
+	display: inline-block;
+    color: #cccccc;
+    width: 16px;
+    padding: 0;
+}
+
+.editBtn:hover,
+.editBtn:active,
+.editBtn:focus {
+    color: #33a9ff;
+    outline:0 !important;
+}
+
+.buttonsContainer button{
+	margin-right: 10px;
+}
+.buttonsContainer button:last-child{
+	margin-right: 0px;
+}
