@@ -13,6 +13,9 @@
 .table > thead > tr > th {
     border-bottom: 2px solid #ddd;
 }
+.table > tbody > tr > td {
+  height: 47px;
+}
 
 .table .emptyMessage {
     height: 150px;
@@ -37,8 +40,7 @@
 }
 
 .removeBtn:hover,
-.removeBtn:active,
-.removeBtn:focus {
+.removeBtn:active{
     color: #d9534f;
     outline:0 !important;
 }
@@ -50,9 +52,17 @@
 }
 
 .editBtn:hover,
-.editBtn:active,
-.editBtn:focus {
+.editBtn:active{
     color: #33a9ff;
+    outline:0 !important;
+}
+
+.editBtn:hover,
+.editBtn:active,
+.editBtn:focus,
+.removeBtn:hover,
+.removeBtn:active,
+.removeBtn:focus {
     outline:0 !important;
 }
 
@@ -61,4 +71,7 @@
 }
 .buttonsContainer button:last-child{
 	margin-right: 0px;
+}
+.editableField{
+    margin: 0;
 }

@@ -4,7 +4,8 @@ import {connect} from 'react-redux'
 import {getPupilList, getTrainerList, matchPupilAndTrainer} from "../reducers/requestReducer";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
-
+import DatePicker  from "react-16-bootstrap-date-picker";
+import {DAYS, MONTHS} from "../statics/calendar";
 const styles = require('./listManager.css');
 
 const TABS = {sportsmen: 0, trainer: 1};
@@ -25,14 +26,15 @@ export class ListManagerComponent extends React.Component {
         }
     }
 
-   
-   componentWillReceiveProps(nextProps) {
+
+    componentWillReceiveProps(nextProps) {
         if (nextProps.requestState.isPupilListReady && nextProps.requestState.isTrainerListReady) {
             const componentPupilsList = matchPupilAndTrainer(nextProps.requestState.pupilList, nextProps.requestState.trainerList);
             const componentTrainersList = nextProps.requestState.trainerList;
             this.setState({componentPupilsList, componentTrainersList});
         }
     }
+
     render() {
         const activeTab = this.state.activeTab;
 
@@ -52,11 +54,12 @@ export class ListManagerComponent extends React.Component {
             </div>
         )
     }
+
     setActiveTab = (tab) => {
-          this.setState({activeTab: tab});
+        this.setState({activeTab: tab});
     }
 
-    renderTabDataList(){
+    renderTabDataList() {
         const activeTab = this.state.activeTab;
         const isPupilListLoading = this.props.requestState.isPupilListLoading;
         const isTrainerListLoading = this.props.requestState.isTrainerListLoading;
@@ -69,31 +72,31 @@ export class ListManagerComponent extends React.Component {
             <div>{isLoading && <div className='loader-wrapper'>
                 <div className='loader'></div>
             </div>}
-            <Table striped className={styles.table}>
-                <thead>
+                <Table striped className={styles.table}>
+                    <thead>
                     {this.getTabTableHeader()}
-                </thead>
-                <ReactCSSTransitionGroup
-                    transitionName="fade"
-                    transitionLeaveTimeout={300}
-                    transitionEnterTimeout={500} 
-                    transitionEnter={false}
-                    transitionLeave={false}
-                    component="tbody"
-                >
+                    </thead>
+                    <ReactCSSTransitionGroup
+                        transitionName="fade"
+                        transitionLeaveTimeout={300}
+                        transitionEnterTimeout={500}
+                        transitionEnter={false}
+                        transitionLeave={false}
+                        component="tbody"
+                    >
                         {listIsEmpty && <tr>
                             <td colSpan='7' className={styles.emptyMessage}>
-                            Список пуст. Добавьте новых 
-                            {activeTab === TABS.sportsmen ? 'спортсменов' : 'тренеров'}
+                                Список пуст. Добавьте новых
+                                {activeTab === TABS.sportsmen ? 'спортсменов' : 'тренеров'}
                             </td>
                         </tr>}
                         {this.getTabTableRows()}
-                </ReactCSSTransitionGroup>
+                    </ReactCSSTransitionGroup>
                 </Table></div>)
 
     }
 
-    getTabData(){
+    getTabData() {
         const activeTab = this.state.activeTab;
         if (activeTab === TABS.sportsmen && this.props.requestState.isPupilListReady) {
             return this.state.componentPupilsList;
@@ -102,8 +105,9 @@ export class ListManagerComponent extends React.Component {
             return this.state.componentTrainersList;
         }
         return [];
-    }   
-    getTabDataField(){
+    }
+
+    getTabDataField() {
         const activeTab = this.state.activeTab;
         if (activeTab === TABS.sportsmen && this.props.requestState.isPupilListReady) {
             return 'componentPupilsList';
@@ -112,86 +116,176 @@ export class ListManagerComponent extends React.Component {
             return 'componentTrainersList';
         }
         return '';
-    } 
-    getTabTableHeader(){
+    }
+
+    getTabTableHeader() {
         const activeTab = this.state.activeTab;
-        if(activeTab === TABS.sportsmen){
-             return <tr>
+        if (activeTab === TABS.sportsmen) {
+            return <tr>
                 <th className={styles.fioColumn}>Ф.И.О.</th>
                 <th>Дата рождения</th>
                 <th className={styles.trainerColumn}>Тренер</th>
-                <th className={styles.toolsColumn}> </th>
+                <th className={styles.toolsColumn}></th>
             </tr>
         }
-        if(activeTab === TABS.trainer){
-             return <tr>
+        if (activeTab === TABS.trainer) {
+            return <tr>
                 <th className={styles.fioColumn}>Ф.И.О.</th>
-                <th className={styles.toolsColumn}> </th>
+                <th className={styles.toolsColumn}></th>
             </tr>
         }
         return null;
     }
 
-    getTabTableRows(){
+    getTabTableRows() {
         const activeTab = this.state.activeTab;
         const tabData = this.getTabData();
-        return tabData.map( (item, i) => {
-            if(activeTab === TABS.sportsmen)
-                return this.getSportsmenRow(item, i);
-            if(activeTab === TABS.trainer)
-                return this.getTrainerRow(item, i);
+
+        return tabData.map((item, i) => {
+            const editMode = item.editMode === true;
+            if (activeTab === TABS.sportsmen)
+                if (editMode)
+                    return this.getEditableSportsmenRow(item, i);
+                else return this.getSportsmenRow(item, i);
+            if (activeTab === TABS.trainer)
+                if (editMode)
+                    return this.getEditableTrainerRow(item, i);
+                else
+                    return this.getTrainerRow(item, i);
         })
 
     }
-    getSportsmenRow(sportsmen, index){
+
+    getSportsmenRow(sportsmen, index) {
         const momemtBirthday = moment(sportsmen.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
-        const editMode = sportsmen.editMode === true;
 
-        return <tr key={sportsmen.id} >
-            <td>{editMode ? sportsmen.fio : 'AAAA'}</td>
+
+        return <tr key={sportsmen.id}>
+            <td>{sportsmen.fio}</td>
             <td>{birthday}</td>
             <td>{sportsmen.trainer.fio}</td>
-            {this.getControlsColumn(index)}     
-        </tr>
-    }  
-    getTrainerRow(trainer, index){
-        return <tr key={trainer.id} >
-            <td>{trainer.fio}</td>   
-            {this.getControlsColumn(index)}     
+            {this.getControlsColumn(index)}
         </tr>
     }
 
-    getControlsColumn(index){
-       return  <td>
-       <div className={styles.buttonsContainer}>
-           <Button bsStyle="link" className={styles.editBtn}
-                    onClick={this.onClickEditBtnHandler.bind(this, index)}><Glyphicon glyph="edit"/>
-            </Button>
-            <Button bsStyle="link" className={styles.removeBtn}
-                    onClick={this.onClickRemoveBtnHandler.bind(this, index)}><Glyphicon glyph="remove"/>
-            </Button>
-        </div>
+    getEditableSportsmenRow(sportsmen, index) {
+        return <tr key={sportsmen.id}>
+            <td>
+                <EditableField initialValue={sportsmen.fio} validateError={sportsmen.fioError} onChange={value => {
+                    this.updateTabDataByIndex(index, {'tempFio': value});
+                }}/>
+            </td>     <td>
+            <DatePicker id="example-datepicker" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1}/>
+            </td>
+            {this.getEditModeControlsColumn(index)}
+        </tr>
+    }
+
+    getTrainerRow(trainer, index) {
+        return <tr key={trainer.id}>
+            <td>{trainer.fio}</td>
+            {this.getControlsColumn(index)}
+        </tr>
+    }
+
+    getEditableTrainerRow(trainer, index) {
+        return <tr key={trainer.id}>
+            <td>
+                <EditableField initialValue={trainer.fio} validateError={trainer.fioError} onChange={value => {
+                    this.updateTabDataByIndex(index, {'tempFio': value});
+                }}/>
+            </td>
+            {this.getEditModeControlsColumn(index)}
+        </tr>
+    }
+
+    getControlsColumn(index) {
+        return <td>
+            <div className={styles.buttonsContainer}>
+                <Button bsStyle="link" className={styles.editBtn}  title="Редактировать"
+                        onClick={this.onClickEditBtnHandler.bind(this, index)}><Glyphicon glyph="edit"/>
+                </Button>
+                <Button bsStyle="link" className={styles.removeBtn}  title="Удалить"
+                        onClick={this.onClickRemoveBtnHandler.bind(this, index)}><Glyphicon glyph="remove"/>
+                </Button>
+            </div>
+        </td>
+    }
+
+    getEditModeControlsColumn(index) {
+        return <td>
+            <div className={styles.buttonsContainer}>
+                <Button bsStyle="link" className={styles.editBtn} title="Сохранить"
+                        onClick={this.onClickSaveBtnHandler.bind(this, index)}><Glyphicon glyph="floppy-disk"/>
+                </Button>
+                <Button bsStyle="link" className={styles.removeBtn} title="Отмена"
+                        onClick={this.onClickCancelBtnHandler.bind(this, index)}><Glyphicon glyph="remove"/>
+                </Button>
+            </div>
         </td>
     }
 
     onClickEditBtnHandler = (index) => {
-        this.updateTabDataByIndex (index, {editMode : true});
-    }
+        this.updateTabDataByIndex(index, {editMode: true});
+    };
 
-    onClickRemoveBtnHandler = (index) => {}
+    onClickRemoveBtnHandler = (index) => {
+    };
+    onClickSaveBtnHandler = (index) => {
+
+    };
+
+    onClickCancelBtnHandler = (index) => {
+        this.updateTabDataByIndex(index, {editMode: false});
+    };
 
     updateTabDataByIndex = (index, fields) => {
         const tabData = this.getTabData();
         const tabDataField = this.getTabDataField();
         const updatedItem = {...tabData[index], ...fields};
-        this.setState({[tabDataField]: [
-            ...tabData.slice(0, index),
-            updatedItem,
-            ...tabData.slice(index + 1)
-        ] });   
+        this.setState({
+            [tabDataField]: [
+                ...tabData.slice(0, index),
+                updatedItem,
+                ...tabData.slice(index + 1)
+            ]
+        });
     }
 }
+
+
+class EditableField extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: props.initialValue
+        }
+    }
+
+    render() {
+
+        return <FormGroup bsSize="small"  className={styles.editableField}
+                          validationState={this.props.validateError || !this.state.value ? 'error' : null}>
+            <FormControl
+                type="text"
+                maxLength="200"
+                value={this.state.value || ''}
+                onChange={this.onChange}
+            />
+        </FormGroup>
+    }
+
+    onChange = (event) => {
+        this.setState({
+            value: event.target.value
+        });
+        if (this.props.onChange) {
+            this.props.onChange(event.target.value);
+        }
+    }
+}
+
 
 export default connect(
     (state) => ({requestState: state.request}),
@@ -202,6 +296,7 @@ export default connect(
 class AddRecordComponent extends React.Component {
     constructor(props) {
         super(props);
+
     }
 
     render() {
