@@ -5,7 +5,7 @@ import {getPupilList, getTrainerList, matchPupilAndTrainer} from "../reducers/re
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
 import DatePicker  from "react-16-bootstrap-date-picker";
-import {DAYS, MONTHS} from "../statics/calendar";
+import {DATE_FORMAT, DAYS, MONTHS} from "../statics/calendar";
 const styles = require('./listManager.css');
 
 const TABS = {sportsmen: 0, trainer: 1};
@@ -170,17 +170,23 @@ export class ListManagerComponent extends React.Component {
     }
 
     getEditableSportsmenRow(sportsmen, index) {
+        const momemtBirthday = moment(sportsmen.birthday);
+        const birthday = momemtBirthday.isValid() ? momemtBirthday.toISOString() : '';
         return <tr key={sportsmen.id}>
             <td>
                 <EditableField initialValue={sportsmen.fio} validateError={sportsmen.fioError} onChange={value => {
                     this.updateTabDataByIndex(index, {'tempFio': value});
                 }}/>
-            </td>     <td>
-            <DatePicker id="example-datepicker" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1}/>
+            </td>
+            <td>
+            <DatePicker bsSize="small" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1} dateFormat={DATE_FORMAT} value={birthday}/>
+            </td>
+            <td>
+
             </td>
             {this.getEditModeControlsColumn(index)}
         </tr>
-    }
+    }S
 
     getTrainerRow(trainer, index) {
         return <tr key={trainer.id}>
