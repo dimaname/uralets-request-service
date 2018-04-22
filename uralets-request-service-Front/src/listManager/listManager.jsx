@@ -1,11 +1,24 @@
 import * as React from 'react';
-import {ControlLabel, FormControl, FormGroup, Nav, NavItem, Table, Button, Glyphicon} from "react-bootstrap";
+import {
+    ControlLabel,
+    FormControl,
+    FormGroup,
+    Nav,
+    NavItem,
+    Table,
+    Button,
+    Glyphicon,
+    DropdownButton,
+    MenuItem
+} from "react-bootstrap";
 import {connect} from 'react-redux'
 import {getPupilList, getTrainerList, matchPupilAndTrainer} from "../reducers/requestReducer";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
-import DatePicker  from "react-16-bootstrap-date-picker";
+import DatePicker from "react-16-bootstrap-date-picker";
 import {DATE_FORMAT, DAYS, MONTHS} from "../statics/calendar";
+
+const classNames = require('classnames');
 const styles = require('./listManager.css');
 
 const TABS = {sportsmen: 0, trainer: 1};
@@ -20,9 +33,13 @@ export class ListManagerComponent extends React.Component {
         };
         if (!props.requestState.isPupilListReady) {
             props.getPupilList();
+        } else {
+            this.state.componentPupilsList = matchPupilAndTrainer(props.requestState.pupilList, props.requestState.trainerList);
         }
         if (!props.requestState.isTrainerListReady) {
             props.getTrainerList();
+        } else {
+            this.state.componentTrainersList = props.requestState.trainerList;
         }
     }
 
@@ -123,7 +140,7 @@ export class ListManagerComponent extends React.Component {
         if (activeTab === TABS.sportsmen) {
             return <tr>
                 <th className={styles.fioColumn}>Ф.И.О.</th>
-                <th>Дата рождения</th>
+                <th className={styles.datetimeColumn}>Дата рождения</th>
                 <th className={styles.trainerColumn}>Тренер</th>
                 <th className={styles.toolsColumn}></th>
             </tr>
@@ -157,8 +174,8 @@ export class ListManagerComponent extends React.Component {
     }
 
     getSportsmenRow(sportsmen, index) {
-        const momemtBirthday = moment(sportsmen.birthday);
-        const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
+        const momentBirthday = moment.utc(sportsmen.birthday);
+        const birthday = momentBirthday.isValid() ? momentBirthday.format("DD.MM.YYYY") : '';
 
 
         return <tr key={sportsmen.id}>
@@ -170,8 +187,11 @@ export class ListManagerComponent extends React.Component {
     }
 
     getEditableSportsmenRow(sportsmen, index) {
-        const momemtBirthday = moment(sportsmen.birthday);
-        const birthday = momemtBirthday.isValid() ? momemtBirthday.toISOString() : '';
+        const trainersListForDD = this.state.componentTrainersList.map(item => {
+            return {id: item.id, value: item.fio}
+        });
+        const momentBirthday = moment.utc(sportsmen.birthday);
+        const birthday = momentBirthday.isValid() ? momentBirthday.toISOString() : '';
         return <tr key={sportsmen.id}>
             <td>
                 <EditableField initialValue={sportsmen.fio} validateError={sportsmen.fioError} onChange={value => {
@@ -179,14 +199,21 @@ export class ListManagerComponent extends React.Component {
                 }}/>
             </td>
             <td>
-            <DatePicker bsSize="small" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1} dateFormat={DATE_FORMAT} value={birthday}/>
+                <EditableDatetimeField initialValue={birthday} validateError={sportsmen.birthdayError}
+                                       onChange={value => {
+                                           this.updateTabDataByIndex(index, {'tempBirthday': value});
+                                       }}/>
             </td>
             <td>
-
+                <EditableDropdownField valueList={trainersListForDD} initialValue={sportsmen.trainer.fio}
+                                       validateError={sportsmen.trainerError}
+                                       onChange={selectedItem => {
+                                           this.updateTabDataByIndex(index, {'tempTrainer': selectedItem});
+                                       }}/>
             </td>
             {this.getEditModeControlsColumn(index)}
         </tr>
-    }S
+    }
 
     getTrainerRow(trainer, index) {
         return <tr key={trainer.id}>
@@ -198,9 +225,10 @@ export class ListManagerComponent extends React.Component {
     getEditableTrainerRow(trainer, index) {
         return <tr key={trainer.id}>
             <td>
-                <EditableField initialValue={trainer.fio} validateError={trainer.fioError} onChange={value => {
-                    this.updateTabDataByIndex(index, {'tempFio': value});
-                }}/>
+                <EditableField initialValue={trainer.fio} validateError={trainer.fioError}
+                               onChange={value => {
+                                   this.updateTabDataByIndex(index, {'tempFio': value});
+                               }}/>
             </td>
             {this.getEditModeControlsColumn(index)}
         </tr>
@@ -209,10 +237,10 @@ export class ListManagerComponent extends React.Component {
     getControlsColumn(index) {
         return <td>
             <div className={styles.buttonsContainer}>
-                <Button bsStyle="link" className={styles.editBtn}  title="Редактировать"
+                <Button bsStyle="link" className={styles.editBtn} title="Редактировать"
                         onClick={this.onClickEditBtnHandler.bind(this, index)}><Glyphicon glyph="edit"/>
                 </Button>
-                <Button bsStyle="link" className={styles.removeBtn}  title="Удалить"
+                <Button bsStyle="link" className={styles.removeBtn} title="Удалить"
                         onClick={this.onClickRemoveBtnHandler.bind(this, index)}><Glyphicon glyph="remove"/>
                 </Button>
             </div>
@@ -270,8 +298,7 @@ class EditableField extends React.Component {
     }
 
     render() {
-
-        return <FormGroup bsSize="small"  className={styles.editableField}
+        return <FormGroup bsSize="small" className={classNames(styles.editableField, styles.editableFioField)}
                           validationState={this.props.validateError || !this.state.value ? 'error' : null}>
             <FormControl
                 type="text"
@@ -292,6 +319,66 @@ class EditableField extends React.Component {
     }
 }
 
+class EditableDatetimeField extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: props.initialValue
+        }
+    }
+
+    render() {
+        return <FormGroup bsSize="small" className={classNames(styles.editableField, styles.editableDatetimeField)}
+                          validationState={this.props.validateError || !this.state.value ? 'error' : null}>
+            <DatePicker bsSize="small" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1} dateFormat={DATE_FORMAT}
+                        value={this.state.value} onChange={this.onChange} showClearButton={false}/>
+        </FormGroup>
+    }
+
+    onChange = (value) => {
+        this.setState({
+            value
+        });
+        if (this.props.onChange) {
+            this.props.onChange(value);
+        }
+    }
+}
+
+class EditableDropdownField extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: props.initialValue,
+        }
+    }
+
+    render() {
+        const valueList = this.props.valueList;
+        return <DropdownButton
+            title={this.state.value}
+            bsStyle={this.props.validateError || !this.state.value ? 'danger' : 'default'}
+            id="trainer-dd-selector"
+            bsSize="small"
+
+        >
+            {valueList.map((item, i) => {
+                return <MenuItem eventKey={i} key={item.id} onSelect={this.onSelect}>{item.value}</MenuItem>
+            })}
+        </DropdownButton>
+    }
+
+    onSelect = (selectedIndex) => {
+        const selectedItem = this.props.valueList[selectedIndex];
+        this.setState({
+            value: selectedItem.value
+        });
+        if (this.props.onChange) {
+            this.props.onChange(selectedItem);
+        }
+    }
+}
+
 
 export default connect(
     (state) => ({requestState: state.request}),
@@ -302,7 +389,6 @@ export default connect(
 class AddRecordComponent extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {

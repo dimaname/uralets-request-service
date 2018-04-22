@@ -81,7 +81,7 @@ export class LightboxForAddingComponent extends React.Component {
     }
 
     getListItem(item, i) {
-        const momemtBirthday = moment(item.birthday);
+        const momemtBirthday = moment.utc(item.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
 
         return <tr key={i} onClick={this.updateMatchedPupilList.bind(this, item, i)}>

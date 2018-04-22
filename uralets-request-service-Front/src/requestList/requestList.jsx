@@ -149,7 +149,7 @@ export class RequestListComponent extends React.Component {
     }
 
     getTableRow(item, i) {
-        const momemtBirthday = moment(item.birthday);
+        const momemtBirthday = moment.utc(item.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
 
         return <tr key={item.frontId}>

@@ -28,6 +28,7 @@
 }
 .trainerColumn {
     min-width: 150px;
+    width: 30%;
 }
 .toolsColumn {
     width: 60px;
@@ -74,4 +75,16 @@
 }
 .editableField{
     margin: 0;
+}
+.editableDatetimeField{
+    width: 150px;
+}
+.editableFioField{
+    max-width: 300px;
+    min-width: 150px;
+}
+
+.datetimeColumn{
+    min-width: 100px;
+    width: 27%;
 }
