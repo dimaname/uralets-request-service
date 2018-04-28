@@ -12,7 +12,7 @@ import {
     MenuItem
 } from "react-bootstrap";
 import {connect} from 'react-redux'
-import {getPupilList, getTrainerList, matchPupilAndTrainer} from "../reducers/requestReducer";
+import {getPupilList, getTrainerList, matchPupilAndTrainer, updateSportsmenItem} from "../reducers/requestReducer";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
 import DatePicker from "react-16-bootstrap-date-picker";
@@ -49,6 +49,7 @@ export class ListManagerComponent extends React.Component {
             const componentPupilsList = matchPupilAndTrainer(nextProps.requestState.pupilList, nextProps.requestState.trainerList);
             const componentTrainersList = nextProps.requestState.trainerList;
             this.setState({componentPupilsList, componentTrainersList});
+
         }
     }
 
@@ -192,6 +193,7 @@ export class ListManagerComponent extends React.Component {
         });
         const momentBirthday = moment.utc(sportsmen.birthday);
         const birthday = momentBirthday.isValid() ? momentBirthday.toISOString() : '';
+        const trainerFio  = sportsmen.trainer && sportsmen.trainer.fio ? sportsmen.trainer.fio : 'Выберите тренера';
         return <tr key={sportsmen.id}>
             <td>
                 <EditableField initialValue={sportsmen.fio} validateError={sportsmen.fioError} onChange={value => {
@@ -205,7 +207,7 @@ export class ListManagerComponent extends React.Component {
                                        }}/>
             </td>
             <td>
-                <EditableDropdownField valueList={trainersListForDD} initialValue={sportsmen.trainer.fio}
+                <EditableDropdownField valueList={trainersListForDD} initialValue={trainerFio}
                                        validateError={sportsmen.trainerError}
                                        onChange={selectedItem => {
                                            this.updateTabDataByIndex(index, {'tempTrainer': selectedItem});
@@ -266,7 +268,31 @@ export class ListManagerComponent extends React.Component {
 
     onClickRemoveBtnHandler = (index) => {
     };
-    onClickSaveBtnHandler = (index) => {
+
+    onClickSaveBtnHandler = async (index) => {
+        const activeTab = this.state.activeTab;
+        const tabData = this.getTabData();
+        if (activeTab === TABS.sportsmen) {
+            const sportsmen = tabData[index];
+            const sportsmenData = {
+                id: sportsmen.id,
+                ... !!sportsmen.tempFio && {fio: sportsmen.tempFio},
+                ... !!sportsmen.tempBirthday  && {birthday: sportsmen.tempBirthday},
+                ... !!sportsmen.tempTrainer && {trainer: sportsmen.tempTrainer.id}
+            };
+
+            if (Object.keys(sportsmenData).length > 1) {
+                this.updateTabDataByIndex(index, {isSaving: true});
+                await this.props.updateSportsmenItem(sportsmenData);
+                this.updateTabDataByIndex(index, {isSaving: false});
+            }else{
+                this.updateTabDataByIndex(index, {editMode: false});
+            }
+
+        }else if (activeTab === TABS.trainer) {
+
+        }
+
 
     };
 
@@ -382,7 +408,7 @@ class EditableDropdownField extends React.Component {
 
 export default connect(
     (state) => ({requestState: state.request}),
-    {getTrainerList, getPupilList}
+    {getTrainerList, getPupilList, updateSportsmenItem}
 )(ListManagerComponent);
 
 

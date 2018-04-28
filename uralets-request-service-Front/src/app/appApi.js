@@ -26,15 +26,23 @@ export const appApi = {
     sendRequestToServer(requestData) {
         return axios.post('/requestBlank', {requestData}, {baseURL: apiUrl, withCredentials: true}).then(responce => {
             const {status, statusMessage} = responce.data;
-            if(!status || status === 'error'){
+            if (!status || status === 'error') {
                 throw new Error(statusMessage);
             }
             return status;
         });
     },
-    addPupilsToList(data = {}){
-        return axios.post('/mens',data, {baseURL: apiUrl, withCredentials: true}).then(data => {
-            return deserialize(data.data.mens);
+    updatePupilItem(data = {}) {
+        const id = data.id;
+        return axios.put('/mens/' + id, data, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            debugger;
+            return data.data;
+        });
+    },
+    updateTrainerItem(data = {}) {
+        const id = data.id;
+        return axios.put('/trainers/' + id, data, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return deserialize(data.data);
         });
     },
 };

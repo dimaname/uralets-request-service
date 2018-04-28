@@ -6,6 +6,7 @@ export const toggleLightbox = createAction('TOGGLE_LIGHTBOX', (data) => (data));
 export const pupilListSetLoading = createAction('PUPIL_LIST_SET_LOADING', (data) => (data));
 export const trainerListSetLoading = createAction('PUPIL_TRAINER_SET_LOADING', (data) => (data));
 export const setPupilList = createAction('SET_PUPIL_LIST', (data) => (data));
+export const updatePupilInList = createAction('UPDATE_PUPIL_IN_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
@@ -43,6 +44,14 @@ export const getTrainerList = () =>
             if (Array.isArray(trainersColumns) && trainersColumns.length) {
                 dispatch(setTrainerModel(trainersColumns));
             }
+            return responce;
+        });
+    };
+export const updateSportsmenItem = (sportsmenData) =>
+    (dispatch, s, api) => {
+        return api.appApi.updatePupilItem(sportsmenData).then((responce) => {
+            dispatch(updatePupilInList(sportsmenData));
+
             return responce;
         });
     };
@@ -168,6 +177,25 @@ const reducer = handleActions({
         return {
             ...state,
             selectedPupils,
+        };
+
+    },
+    [updatePupilInList.toString()]: (state, action) => {
+        if (!action.payload) return state;
+        const newProps = action.payload;
+        const index = state.pupilList.findIndex( item => item.id === newProps.id);
+        debugger;
+        if(index === -1) return state;
+        const updatedItem = {...state.pupilList[index], ...newProps};
+        const pupilList = [
+            ...state.pupilList.slice(0, index),
+            updatedItem,
+            ...state.pupilList.slice(index + 1)
+        ];
+
+        return {
+            ...state,
+            pupilList,
         };
 
     },
