@@ -83,10 +83,10 @@ export class RequestListComponent extends React.Component {
         const competitionTitleError = this.state.competitionTitleError;
 
         return <Form horizontal>
-            <Col componentClass={ControlLabel} sm={3}>
+            <Col componentClass={ControlLabel} sm={5} md={4}>
                 Краткое название соревнования
             </Col>
-            <Col sm={8}>
+            <Col sm={7} md={8}>
                 <FormGroup bsSize="small" validationState={competitionTitleError ? 'error' : null}>
                     <FormControl
                         type="text"

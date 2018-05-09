@@ -7,6 +7,7 @@ export const pupilListSetLoading = createAction('PUPIL_LIST_SET_LOADING', (data)
 export const trainerListSetLoading = createAction('PUPIL_TRAINER_SET_LOADING', (data) => (data));
 export const setPupilList = createAction('SET_PUPIL_LIST', (data) => (data));
 export const updatePupilInList = createAction('UPDATE_PUPIL_IN_LIST', (data) => (data));
+export const updateTrainerInList = createAction('UPDATE_TRAINER_IN_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
@@ -51,6 +52,14 @@ export const updateSportsmenItem = (sportsmenData) =>
     (dispatch, s, api) => {
         return api.appApi.updatePupilItem(sportsmenData).then((responce) => {
             dispatch(updatePupilInList(sportsmenData));
+
+            return responce;
+        });
+    };
+export const updateTrainerItem = (trainerData) =>
+    (dispatch, s, api) => {
+        return api.appApi.updateTrainerItem(trainerData).then((responce) => {
+            dispatch(updateTrainerInList(trainerData));
 
             return responce;
         });
@@ -183,25 +192,35 @@ const reducer = handleActions({
     [updatePupilInList.toString()]: (state, action) => {
         if (!action.payload) return state;
         const newProps = action.payload;
-        const index = state.pupilList.findIndex( item => item.id === newProps.id);
-        debugger;
-        if(index === -1) return state;
-        const updatedItem = {...state.pupilList[index], ...newProps};
-        const pupilList = [
-            ...state.pupilList.slice(0, index),
-            updatedItem,
-            ...state.pupilList.slice(index + 1)
-        ];
-
+        const pupilList = getListWithUpdatedItem(state.pupilList, newProps);
         return {
             ...state,
             pupilList,
         };
-
+    },
+    [updateTrainerInList.toString()]: (state, action) => {
+        if (!action.payload) return state;
+        const newProps = action.payload;
+        const trainerList = getListWithUpdatedItem(state.trainerList, newProps);
+        return {
+            ...state,
+            trainerList,
+        };
     },
 
 }, initialState);
 
+
+function getListWithUpdatedItem(list, itemNewProps) {
+    const index = list.findIndex( item => item.id === itemNewProps.id);
+    if(index === -1) return list;
+    const updatedItem = {...list[index], ...itemNewProps};
+    return [
+        ...list.slice(0, index),
+        updatedItem,
+        ...list.slice(index + 1)
+    ];
+}
 
 export default reducer;
 

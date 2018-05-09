@@ -35,20 +35,22 @@ export const appApi = {
     updatePupilItem(data = {}) {
         const id = data.id;
         return axios.put('/mens/' + id, data, {baseURL: apiUrl, withCredentials: true}).then(data => {
-            debugger;
             return data.data;
+        }).catch(error => {
+            throw error;
         });
     },
     updateTrainerItem(data = {}) {
         const id = data.id;
         return axios.put('/trainers/' + id, data, {baseURL: apiUrl, withCredentials: true}).then(data => {
-            return deserialize(data.data);
+            return data.data;
+        }).catch(error => {
+            throw error;
         });
     },
 };
 
 const deserialize = function ({columns, records}) {
-
     const result = records.map(record => {
         const newRecord = {};
         record.forEach((field, i) => {
@@ -57,4 +59,4 @@ const deserialize = function ({columns, records}) {
         return newRecord;
     });
     return result;
-}
+};

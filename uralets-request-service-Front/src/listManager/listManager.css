@@ -1,3 +1,7 @@
+.root {
+    margin-bottom: 80px;
+    min-height: 45vh;
+}
 
 .table {
     margin-bottom: 0px;
