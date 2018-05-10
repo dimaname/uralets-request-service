@@ -95,7 +95,8 @@
 
 .editableField {
     margin: 0;
-    display: flex;
+    margin-right: 20px;
+    margin-bottom: 20px!important;
 }
 
 .editableDatetimeField {
@@ -142,6 +143,8 @@
 
 .editableFieldInput {
     display: inline-block;
-    flex-grow: 2;
     width: auto;
+}
+.dropdownButtonWrapper{
+    display: inline-block;
 }

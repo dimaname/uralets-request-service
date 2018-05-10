@@ -124,30 +124,25 @@ export class ListManagerComponent extends React.Component {
             <div className={styles.addNewRowBlock}>
                 <h4 className={styles.addNewRowBlockHeader}>Добавить нового</h4>
 
-                <Table className={styles.addNewTable}>
-                    <tbody>
-                    <tr>
-                        <td className={styles.fioColumn}>
-                            <EditableField placeholder='Ф.И.О.' label="Введите Ф.И.О."/>
-                        </td>
-                        <td className={styles.datetimeColumn}>
-                            <EditableDatetimeField label="Дата рождения"/></td>
-                        <td className={styles.trainerColumn}>
-                            <EditableDropdownField valueList={trainersListForDD} placeholder='Выберите тренера'
-                                                   label="Тренер"/></td>
-                        <td className={styles.toolsColumn}>
-                            <div className={styles.buttonsContainer}>
-                                <Button bsStyle="link" className={styles.editBtn} title="Добавить">
-                                    <Glyphicon glyph="plus"/>
-                                </Button>
-                                <Button bsStyle="link" className={styles.removeBtn} title="Отчистить">
-                                    <Glyphicon glyph="remove"/>
-                                </Button>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </Table>
+                <Form inline>
+                    <EditableField placeholder='Ф.И.О.' label="Введите Ф.И.О."/>
+
+
+                    <EditableDatetimeField label="Дата рождения"/>
+
+                    <EditableDropdownField valueList={trainersListForDD} placeholder='Выберите тренера'
+                                           label="Тренер"/>
+
+                    <div className={styles.buttonsContainer}>
+                        <Button bsStyle="link" className={styles.editBtn} title="Добавить">
+                            <Glyphicon glyph="plus"/>
+                        </Button>
+                        <Button bsStyle="link" className={styles.removeBtn} title="Отчистить">
+                            <Glyphicon glyph="remove"/>
+                        </Button>
+                    </div>
+
+                </Form>
 
 
             </div>
@@ -608,11 +603,13 @@ class EditableDatetimeField extends React.Component {
                 {this.props.label}
             </ControlLabel>}
 
-            <DatePicker bsSize="small" dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1}
-                        dateFormat={DATE_FORMAT}
-                        className={classNames(styles.editableFieldInput, styles.editableDatetimeField)}
-                        value={this.state.value} disabled={this.props.disabled} onChange={this.onChange}
-                        showClearButton={false}/>
+            <DatePicker
+                style={{display: 'inline-block'}}
+                dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1}
+                dateFormat={DATE_FORMAT}
+                className={classNames(styles.editableFieldInput, styles.editableDatetimeField)}
+                value={this.state.value} disabled={this.props.disabled} onChange={this.onChange}
+                showClearButton={false}/>
 
 
         </FormGroup>
@@ -652,6 +649,7 @@ class EditableDropdownField extends React.Component {
                     disabled={this.props.disabled}
                     bsStyle={this.props.validateError ? 'danger' : 'default'}
                     className={styles.editableFieldInput}
+
                     id="trainer-dd-selector"
                     bsSize="small"
                 >
