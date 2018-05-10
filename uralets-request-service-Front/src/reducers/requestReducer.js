@@ -8,6 +8,8 @@ export const trainerListSetLoading = createAction('PUPIL_TRAINER_SET_LOADING', (
 export const setPupilList = createAction('SET_PUPIL_LIST', (data) => (data));
 export const updatePupilInList = createAction('UPDATE_PUPIL_IN_LIST', (data) => (data));
 export const updateTrainerInList = createAction('UPDATE_TRAINER_IN_LIST', (data) => (data));
+export const deletePupilInList = createAction('DELETE_PUPIL_IN_LIST', (data) => (data));
+export const deleteTrainerInList = createAction('DELETE_TRAINER_IN_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
@@ -23,7 +25,7 @@ export const getPupilList = () =>
             dispatch(pupilListSetLoading(false));
             const pupilsList = responce.result;
             const pupilsColumns = responce.columns;
-            if (Array.isArray(pupilsList) && pupilsList.length) {
+            if (Array.isArray(pupilsList)) {
                 dispatch(setPupilList(pupilsList));
             }
             if (Array.isArray(pupilsColumns) && pupilsColumns.length) {
@@ -39,7 +41,7 @@ export const getTrainerList = () =>
             dispatch(trainerListSetLoading(false));
             const trainersList = responce.result;
             const trainersColumns = responce.columns;
-            if (Array.isArray(trainersList) && trainersList.length) {
+            if (Array.isArray(trainersList)) {
                 dispatch(setTrainerList(trainersList));
             }
             if (Array.isArray(trainersColumns) && trainersColumns.length) {
@@ -52,7 +54,6 @@ export const updateSportsmenItem = (sportsmenData) =>
     (dispatch, s, api) => {
         return api.appApi.updatePupilItem(sportsmenData).then((responce) => {
             dispatch(updatePupilInList(sportsmenData));
-
             return responce;
         });
     };
@@ -60,7 +61,20 @@ export const updateTrainerItem = (trainerData) =>
     (dispatch, s, api) => {
         return api.appApi.updateTrainerItem(trainerData).then((responce) => {
             dispatch(updateTrainerInList(trainerData));
-
+            return responce;
+        });
+    };
+export const deleteSportsmenItem = (sportsmenId) =>
+    (dispatch, s, api) => {
+        return api.appApi.deletePupilItem(sportsmenId).then((responce) => {
+            dispatch(deletePupilInList(sportsmenId));
+            return responce;
+        });
+    };
+export const deleteTrainerItem = (trainerId) =>
+    (dispatch, s, api) => {
+        return api.appApi.deleteTrainerItem(trainerId).then((responce) => {
+            dispatch(deleteTrainerInList(trainerId));
             return responce;
         });
     };
@@ -207,6 +221,24 @@ const reducer = handleActions({
             trainerList,
         };
     },
+    [deletePupilInList.toString()]: (state, action) => {
+        if (!action.payload) return state;
+        const itemId = action.payload;
+        const pupilList = getListWithoutItem(state.pupilList, itemId);
+        return {
+            ...state,
+            pupilList,
+        };
+    },
+    [deleteTrainerInList.toString()]: (state, action) => {
+        if (!action.payload) return state;
+        const itemId = action.payload;
+        const trainerList = getListWithoutItem(state.trainerList, itemId);
+        return {
+            ...state,
+            trainerList,
+        };
+    },
 
 }, initialState);
 
@@ -218,6 +250,14 @@ function getListWithUpdatedItem(list, itemNewProps) {
     return [
         ...list.slice(0, index),
         updatedItem,
+        ...list.slice(index + 1)
+    ];
+}
+function getListWithoutItem(list, id) {
+    const index = list.findIndex( item => item.id === id);
+    if(index === -1) return list;
+    return [
+        ...list.slice(0, index),
         ...list.slice(index + 1)
     ];
 }

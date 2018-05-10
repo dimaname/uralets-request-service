@@ -48,6 +48,20 @@ export const appApi = {
             throw error;
         });
     },
+    deletePupilItem(id) {
+        return axios.delete('/mens/' + id, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return data.data;
+        }).catch(error => {
+            throw error;
+        });
+    },
+    deleteTrainerItem(id) {
+        return axios.delete('/trainers/' + id, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return data.data;
+        }).catch(error => {
+            throw error;
+        });
+    },
 };
 
 const deserialize = function ({columns, records}) {

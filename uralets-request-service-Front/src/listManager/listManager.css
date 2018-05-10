@@ -3,6 +3,10 @@
     min-height: 45vh;
 }
 
+.confirmModal {
+    margin-top: 30vh;
+}
+
 .table {
     margin-bottom: 0px;
 }
@@ -17,8 +21,13 @@
 .table > thead > tr > th {
     border-bottom: 2px solid #ddd;
 }
+
 .table > tbody > tr > td {
-  height: 47px;
+    height: 47px;
+}
+
+.table > tbody > tr.trDisabled {
+    opacity: 0.5;
 }
 
 .table .emptyMessage {
@@ -27,39 +36,44 @@
     vertical-align: middle;
     font-size: 18px;
 }
+
 .fioColumn {
     min-width: 150px;
 }
+
 .trainerColumn {
     min-width: 150px;
     width: 30%;
 }
+
 .toolsColumn {
     width: 60px;
 }
+
 .removeBtn {
-	display: inline-block;
+    display: inline-block;
     color: #cccccc;
     width: 16px;
     padding: 0;
 }
 
 .removeBtn:hover,
-.removeBtn:active{
+.removeBtn:active {
     color: #d9534f;
-    outline:0 !important;
+    outline: 0 !important;
 }
+
 .editBtn {
-	display: inline-block;
+    display: inline-block;
     color: #cccccc;
     width: 16px;
     padding: 0;
 }
 
 .editBtn:hover,
-.editBtn:active{
+.editBtn:active {
     color: #33a9ff;
-    outline:0 !important;
+    outline: 0 !important;
 }
 
 .editBtn:hover,
@@ -68,27 +82,66 @@
 .removeBtn:hover,
 .removeBtn:active,
 .removeBtn:focus {
-    outline:0 !important;
+    outline: 0 !important;
 }
 
-.buttonsContainer button{
-	margin-right: 10px;
+.buttonsContainer button {
+    margin-right: 10px;
 }
-.buttonsContainer button:last-child{
-	margin-right: 0px;
+
+.buttonsContainer button:last-child {
+    margin-right: 0;
 }
-.editableField{
+
+.editableField {
     margin: 0;
+    display: flex;
 }
-.editableDatetimeField{
+
+.editableDatetimeField {
     width: 150px;
 }
-.editableFioField{
+
+.editableFioField {
     max-width: 300px;
     min-width: 150px;
 }
 
-.datetimeColumn{
+.datetimeColumn {
     min-width: 100px;
     width: 27%;
+}
+
+.addNewRowBlock {
+    margin-top: 15px;
+    background-color: #f1f1f1;
+    margin-bottom: 17px;
+    padding-bottom: 10px;
+
+}
+
+.addNewRowBlockHeader {
+    margin-top: 0;
+    padding: 15px 0 0 15px;
+    margin-bottom: 25px;
+}
+
+.addNewTable > tbody > tr {
+    background: none;
+}
+
+.addNewTable > tbody > tr > td {
+    border: none;
+}
+
+.fieldLabel {
+    margin-right: 15px;
+    line-height: 30px;
+}
+
+
+.editableFieldInput {
+    display: inline-block;
+    flex-grow: 2;
+    width: auto;
 }
