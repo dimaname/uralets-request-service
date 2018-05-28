@@ -84,7 +84,9 @@
 .removeBtn:focus {
     outline: 0 !important;
 }
-
+.buttonsContainer{
+	min-width: 56px;
+}
 .buttonsContainer button {
     margin-right: 10px;
 }
@@ -118,6 +120,7 @@
     background-color: #f1f1f1;
     margin-bottom: 17px;
     padding-bottom: 10px;
+    min-width: 470px;
 
 }
 
@@ -147,4 +150,12 @@
 }
 .dropdownButtonWrapper{
     display: inline-block;
+
 }
+.addNewRowBlockForm{
+    margin-left: 20px;
+    display: flex;
+    justify-content: space-between;
+
+}
+.addNewRowBlockFields{}

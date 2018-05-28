@@ -124,7 +124,8 @@ export class ListManagerComponent extends React.Component {
             <div className={styles.addNewRowBlock}>
                 <h4 className={styles.addNewRowBlockHeader}>Добавить нового</h4>
 
-                <Form inline>
+                <Form inline className={styles.addNewRowBlockForm}>
+                 <div  className={styles.addNewRowBlockFields}>
                     <EditableField placeholder='Ф.И.О.' label="Введите Ф.И.О."/>
 
 
@@ -132,7 +133,7 @@ export class ListManagerComponent extends React.Component {
 
                     <EditableDropdownField valueList={trainersListForDD} placeholder='Выберите тренера'
                                            label="Тренер"/>
-
+                    </div>                       
                     <div className={styles.buttonsContainer}>
                         <Button bsStyle="link" className={styles.editBtn} title="Добавить">
                             <Glyphicon glyph="plus"/>
