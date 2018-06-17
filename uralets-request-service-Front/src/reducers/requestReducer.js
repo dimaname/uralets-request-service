@@ -250,7 +250,14 @@ const reducer = handleActions({
         };
     },
     [addTrainerToList.toString()]: (state, action) => {
+        const newItem = action.payload;
+        if (!newItem) return state;
 
+        const trainerList = [...state.trainerList, newItem];
+        return {
+            ...state,
+            trainerList,
+        };
     },
     [deletePupilInList.toString()]: (state, action) => {
         if (!action.payload) return state;

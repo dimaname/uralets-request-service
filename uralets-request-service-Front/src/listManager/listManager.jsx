@@ -16,6 +16,7 @@ import {
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
 import AddNewSportsmen from "./addNewSportsmen";
+import AddNewTrainer from "./addNewTrainer";
 import {EditableField} from "./editableField";
 import {EditableDatetimeField} from "./editableDatetimeField";
 import {EditableDropdownField} from "./editableDropdownField";
@@ -120,7 +121,7 @@ export class ListManagerComponent extends React.Component {
         if (activeTab === TABS.sportsmen) {
             return <AddNewSportsmen onAddError={this.showAddingErrorAlert} onAddSuccess={this.closeAlert}/>
         } else if (activeTab === TABS.trainer) {
-            return ''
+            return <AddNewTrainer onAddError={this.showAddingErrorAlert} onAddSuccess={this.closeAlert}/>
         }
 
     }
