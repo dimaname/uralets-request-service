@@ -98,6 +98,10 @@
 .editableField {
     margin: 0;
     margin-right: 20px;
+}
+.editableFieldAddNewBlock {
+    margin: 0;
+    margin-right: 20px;
     margin-bottom: 20px!important;
 }
 
@@ -158,4 +162,3 @@
     justify-content: space-between;
 
 }
-.addNewRowBlockFields{}

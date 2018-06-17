@@ -1,16 +1,12 @@
 import * as React from 'react';
 import {
-    FormControl,
-    FormGroup,
     Nav,
     NavItem,
     Table,
     Button,
     Alert,
     Glyphicon,
-    DropdownButton,
-    MenuItem,
-    Modal
+    Modal,
 } from "react-bootstrap";
 import {connect} from 'react-redux'
 import {
@@ -19,13 +15,12 @@ import {
 } from "../reducers/requestReducer";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
-import DatePicker from "react-16-bootstrap-date-picker";
-import {DATE_FORMAT, DAYS, MONTHS} from "../statics/calendar";
-import ControlLabel from "react-bootstrap/es/ControlLabel";
-import Col from "react-bootstrap/es/Col";
-import Form from "react-bootstrap/es/Form";
+import AddNewSportsmen from "./addNewSportsmen";
+import {EditableField} from "./editableField";
+import {EditableDatetimeField} from "./editableDatetimeField";
+import {EditableDropdownField} from "./editableDropdownField";
 
-const classNames = require('classnames');
+
 const styles = require('./listManager.css');
 
 const TABS = {sportsmen: 0, trainer: 1};
@@ -41,6 +36,8 @@ export class ListManagerComponent extends React.Component {
             deleteItemData: null,
             alertHeader: '',
             alertBody: '',
+            newPupilData: null,
+            newTrainerData: null,
         };
         if (!props.requestState.isPupilListReady) {
             props.getPupilList();
@@ -53,7 +50,6 @@ export class ListManagerComponent extends React.Component {
             this.state.componentTrainersList = props.requestState.trainerList;
         }
     }
-
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.requestState.isPupilListReady && nextProps.requestState.isTrainerListReady) {
@@ -79,7 +75,7 @@ export class ListManagerComponent extends React.Component {
                         Список тренеров
                     </NavItem>
                 </Nav>
-                {this.renderAddNewRow()}
+                {this.renderAddNewBlock()}
                 {this.renderTabDataList()}
                 {this.renderConfirmModal()}
             </div>
@@ -89,10 +85,12 @@ export class ListManagerComponent extends React.Component {
     closeConfirm = () => {
         this.setState({showConfirmDelete: false});
     };
+
     approveConfirm = () => {
         this.deleteTabDataItem();
         this.setState({showConfirmDelete: false});
     };
+
     setActiveTab = (tab) => {
         this.closeAlert();
         this.clearEditModeInAllRowsOfActiveTab();
@@ -117,40 +115,15 @@ export class ListManagerComponent extends React.Component {
         });
     }
 
-    renderAddNewRow() {
-        const trainersListForDD = this.getTrainersDropdownList();
+    renderAddNewBlock() {
+        const activeTab = this.state.activeTab;
+        if (activeTab === TABS.sportsmen) {
+            return <AddNewSportsmen onAddError={this.showAddingErrorAlert} onAddSuccess={this.closeAlert}/>
+        } else if (activeTab === TABS.trainer) {
+            return ''
+        }
 
-        return (
-            <div className={styles.addNewRowBlock}>
-                <h4 className={styles.addNewRowBlockHeader}>Добавить нового</h4>
-
-                <Form inline className={styles.addNewRowBlockForm}>
-                 <div  className={styles.addNewRowBlockFields}>
-                    <EditableField placeholder='Ф.И.О.' label="Введите Ф.И.О."/>
-
-
-                    <EditableDatetimeField label="Дата рождения"/>
-
-                    <EditableDropdownField valueList={trainersListForDD} placeholder='Выберите тренера'
-                                           label="Тренер"/>
-                    </div>                       
-                    <div className={styles.buttonsContainer}>
-                        <Button bsStyle="link" className={styles.editBtn} title="Добавить">
-                            <Glyphicon glyph="plus"/>
-                        </Button>
-                        <Button bsStyle="link" className={styles.removeBtn} title="Отчистить">
-                            <Glyphicon glyph="remove"/>
-                        </Button>
-                    </div>
-
-                </Form>
-
-
-            </div>
-
-
-        )
-    };
+    }
 
     renderAlerts() {
         const {alertHeader, alertBody} = this.state;
@@ -212,8 +185,8 @@ export class ListManagerComponent extends React.Component {
                     >
                         {listIsEmpty && <tr>
                             <td colSpan='7' className={styles.emptyMessage}>
-                                Список пуст. Добавьте новых
-                                {activeTab === TABS.sportsmen ? ' спортсменов' : ' тренеров'}
+                                Список пуст. Добавьте новых&nbsp;
+                                {activeTab === TABS.sportsmen ? 'спортсменов' : 'тренеров'}
                             </td>
                         </tr>}
                         {this.getTabTableRows()}
@@ -388,18 +361,28 @@ export class ListManagerComponent extends React.Component {
             alertBody: '',
         });
     };
+
     showSavingErrorAlert = () => {
         this.setState({
             alertHeader: 'Ошибка при сохранении',
             alertBody: 'Не удалось сохранить обновленную запись. Попробуйте сохранить ещё раз или обратитесь к администратору сервиса.',
         });
     };
+
+    showAddingErrorAlert = () => {
+        this.setState({
+            alertHeader: 'Ошибка при добавлении',
+            alertBody: 'Не удалось добавить новую запись. Попробуйте ещё раз или обратитесь к администратору сервиса.',
+        });
+    };
+
     showDeletingErrorAlert = () => {
         this.setState({
             alertHeader: 'Ошибка при удалении',
             alertBody: 'Не удалось удалить запись. Попробуйте удалить ещё раз или обратитесь к администратору сервиса.',
         });
     };
+
     onClickEditBtnHandler = (index) => {
         const activeTab = this.state.activeTab;
         const tabData = this.getTabData();
@@ -487,8 +470,11 @@ export class ListManagerComponent extends React.Component {
             fields.tempFio = '';
             fields.tempBirthday = '';
             fields.tempTrainer = null;
+            fields.fioError = false;
+            fields.birthdayError = false;
         } else if (activeTab === TABS.trainer) {
             fields.tempFio = '';
+            fields.fioError = false;
         }
         this.updateTabDataByIndex(index, fields);
     };
@@ -497,9 +483,19 @@ export class ListManagerComponent extends React.Component {
         const sportsmenList = this.state.componentPupilsList || [];
         const sportsmen = sportsmenList[index];
         let result = true;
-        if (!sportsmen.tempFio || !sportsmen.tempBirthday) {
+        const errorsFields = {
+            fioError: false,
+            birthdayError: false,
+        };
+        if (!sportsmen.tempFio) {
+            errorsFields.fioError = true;
             result = false;
         }
+        if (!sportsmen.tempBirthday) {
+            errorsFields.birthdayError = true;
+            result = false;
+        }
+        this.updateTabDataByIndex(index, errorsFields);
         return result;
     };
 
@@ -507,9 +503,14 @@ export class ListManagerComponent extends React.Component {
         const trainerList = this.state.componentTrainersList || [];
         const trainer = trainerList[index];
         let result = true;
+        const errorsFields = {
+            fioError: false
+        };
         if (!trainer.tempFio) {
+            errorsFields.fioError = true;
             result = false;
         }
+        this.updateTabDataByIndex(index, errorsFields);
         return result;
     };
 
@@ -546,130 +547,6 @@ export class ListManagerComponent extends React.Component {
                 ...tabData.slice(index + 1)
             ]
         });
-    }
-}
-
-
-class EditableField extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: props.initialValue
-        }
-    }
-
-    render() {
-        return <FormGroup bsSize="small"
-                          className={styles.editableField}
-                          validationState={this.props.validateError ? 'error' : null}>
-            {this.props.label && <ControlLabel className={styles.fieldLabel}>
-                {this.props.label}
-            </ControlLabel>}
-
-            <FormControl
-                className={classNames(styles.editableFieldInput, styles.editableFioField)}
-                type="text"
-                maxLength="200"
-                disabled={this.props.disabled}
-                placeholder={this.props.placeholder || ''}
-                value={this.state.value || ''}
-                onChange={this.onChange}
-            />
-        </FormGroup>
-    }
-
-    onChange = (event) => {
-        this.setState({
-            value: event.target.value
-        });
-        if (this.props.onChange) {
-            this.props.onChange(event.target.value);
-        }
-    }
-}
-
-class EditableDatetimeField extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: props.initialValue
-        }
-    }
-
-    render() {
-        return <FormGroup bsSize="small"
-                          className={styles.editableField}
-                          validationState={this.props.validateError ? 'error' : null}>
-            {this.props.label && <ControlLabel className={styles.fieldLabel}>
-                {this.props.label}
-            </ControlLabel>}
-
-            <DatePicker
-                style={{display: 'inline-block'}}
-                dayLabels={DAYS} monthLabels={MONTHS} weekStartsOn={1}
-                dateFormat={DATE_FORMAT}
-                className={classNames(styles.editableFieldInput, styles.editableDatetimeField)}
-                value={this.state.value} disabled={this.props.disabled} onChange={this.onChange}
-                showClearButton={false}/>
-
-
-        </FormGroup>
-    }
-
-    onChange = (value) => {
-        this.setState({
-            value
-        });
-        if (this.props.onChange) {
-            this.props.onChange(value);
-        }
-    }
-}
-
-class EditableDropdownField extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: props.initialValue || '',
-        }
-    }
-
-    render() {
-        const valueList = this.props.valueList;
-        const title = this.state.value ? this.state.value : this.props.placeholder;
-        return (
-            <FormGroup bsSize="small" validationState={this.props.validateError ? 'error' : null}
-                       className={styles.editableField}
-            >
-                {this.props.label && <ControlLabel className={styles.fieldLabel}>
-                    {this.props.label}
-                </ControlLabel>}
-
-                <DropdownButton
-                    title={title}
-                    disabled={this.props.disabled}
-                    bsStyle={this.props.validateError ? 'danger' : 'default'}
-                    className={styles.editableFieldInput}
-
-                    id="trainer-dd-selector"
-                    bsSize="small"
-                >
-                    {valueList.map((item, i) => {
-                        return <MenuItem eventKey={i} key={item.id} onSelect={this.onSelect}>{item.value}</MenuItem>
-                    })}
-                </DropdownButton>
-
-            </FormGroup>)
-    }
-
-    onSelect = (selectedIndex) => {
-        const selectedItem = this.props.valueList[selectedIndex];
-        this.setState({
-            value: selectedItem.value
-        });
-        if (this.props.onChange) {
-            this.props.onChange(selectedItem);
-        }
     }
 }
 

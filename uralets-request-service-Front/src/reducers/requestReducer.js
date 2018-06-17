@@ -10,6 +10,8 @@ export const updatePupilInList = createAction('UPDATE_PUPIL_IN_LIST', (data) => 
 export const updateTrainerInList = createAction('UPDATE_TRAINER_IN_LIST', (data) => (data));
 export const deletePupilInList = createAction('DELETE_PUPIL_IN_LIST', (data) => (data));
 export const deleteTrainerInList = createAction('DELETE_TRAINER_IN_LIST', (data) => (data));
+export const addPupilToList = createAction('ADD_PUPIL_TO_LIST', (data) => (data));
+export const addTrainerToList = createAction('ADD_TRAINER_TO_LIST', (data) => (data));
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
@@ -47,6 +49,22 @@ export const getTrainerList = () =>
             if (Array.isArray(trainersColumns) && trainersColumns.length) {
                 dispatch(setTrainerModel(trainersColumns));
             }
+            return responce;
+        });
+    };
+export const addSportsmenItem = (sportsmenData) =>
+    (dispatch, s, api) => {
+        return api.appApi.addPupilItem(sportsmenData).then((responce) => {
+            sportsmenData.id = responce;
+            dispatch(addPupilToList(sportsmenData));
+            return responce;
+        });
+    };
+export const addTrainerItem = (trainerData) =>
+    (dispatch, s, api) => {
+        return api.appApi.addTrainerItem(trainerData).then((responce) => {
+            trainerData.id = responce;
+            dispatch(addTrainerToList(trainerData));
             return responce;
         });
     };
@@ -221,6 +239,19 @@ const reducer = handleActions({
             trainerList,
         };
     },
+    [addPupilToList.toString()]: (state, action) => {
+        const newItem = action.payload;
+        if (!newItem) return state;
+
+        const pupilList = [...state.pupilList, newItem];
+        return {
+            ...state,
+            pupilList,
+        };
+    },
+    [addTrainerToList.toString()]: (state, action) => {
+
+    },
     [deletePupilInList.toString()]: (state, action) => {
         if (!action.payload) return state;
         const itemId = action.payload;
@@ -244,8 +275,8 @@ const reducer = handleActions({
 
 
 function getListWithUpdatedItem(list, itemNewProps) {
-    const index = list.findIndex( item => item.id === itemNewProps.id);
-    if(index === -1) return list;
+    const index = list.findIndex(item => item.id === itemNewProps.id);
+    if (index === -1) return list;
     const updatedItem = {...list[index], ...itemNewProps};
     return [
         ...list.slice(0, index),
@@ -253,9 +284,10 @@ function getListWithUpdatedItem(list, itemNewProps) {
         ...list.slice(index + 1)
     ];
 }
+
 function getListWithoutItem(list, id) {
-    const index = list.findIndex( item => item.id === id);
-    if(index === -1) return list;
+    const index = list.findIndex(item => item.id === id);
+    if (index === -1) return list;
     return [
         ...list.slice(0, index),
         ...list.slice(index + 1)
@@ -266,13 +298,13 @@ export default reducer;
 
 
 export function matchPupilAndTrainer(pupilList = [], treainerList = []) {
-        const trainerByIds = treainerList.reduce((result, trainer) => {
-            result[trainer.id] = trainer;
-            return result;
-        }, {});
+    const trainerByIds = treainerList.reduce((result, trainer) => {
+        result[trainer.id] = trainer;
+        return result;
+    }, {});
 
-        return pupilList.map(pupil => {
-            const trainerObj = trainerByIds[pupil.trainer] || {};
-            return {...pupil, trainer: trainerObj};
-        })
+    return pupilList.map(pupil => {
+        const trainerObj = trainerByIds[pupil.trainer] || {};
+        return {...pupil, trainer: trainerObj};
+    })
 }

@@ -32,6 +32,20 @@ export const appApi = {
             return status;
         });
     },
+    addPupilItem(data = {}) {
+        return axios.post('/mens/', data, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return data.data;
+        }).catch(error => {
+            throw error;
+        });
+    },
+    addTrainerItem(data = {}) {
+        return axios.post('/trainers/', data, {baseURL: apiUrl, withCredentials: true}).then(data => {
+            return data.data;
+        }).catch(error => {
+            throw error;
+        });
+    },
     updatePupilItem(data = {}) {
         const id = data.id;
         return axios.put('/mens/' + id, data, {baseURL: apiUrl, withCredentials: true}).then(data => {
