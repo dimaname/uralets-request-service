@@ -15,6 +15,16 @@ class AddNewSportsmen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.updateField = this.updateField.bind(this);
+        this.clearAllFields = this.clearAllFields.bind(this);
+        this.onClickAddNewBtnHandler = this.onClickAddNewBtnHandler.bind(this);
+
+        const trainersList = props.requestState.trainerList.map(item => {
+            return {id: item.id, value: item.fio}
+        });
+
+
         this.state = {
             fio: '',
             fioError: false,
@@ -22,13 +32,9 @@ class AddNewSportsmen extends React.Component {
             birthdayError: false,
             trainer: '',
             trainerError: false,
-            trainersList: [],
+            trainersList,
             isSaving: false,
         };
-        this.updateField = this.updateField.bind(this);
-        this.clearAllFields = this.clearAllFields.bind(this);
-        this.onClickAddNewBtnHandler = this.onClickAddNewBtnHandler.bind(this);
-
     }
 
     componentWillReceiveProps(nextProps) {
@@ -39,6 +45,7 @@ class AddNewSportsmen extends React.Component {
             this.setState({trainersList});
         }
     }
+
 
     render() {
         const {trainersList, fioError, birthdayError, trainerError, isSaving} = this.state;

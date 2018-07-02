@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {Modal, Button, Table, Checkbox} from 'react-bootstrap';
+import {Modal, Button, Table, Checkbox, Glyphicon} from 'react-bootstrap';
 import {connect} from 'react-redux'
 import {toggleLightbox, getPupilList, getTrainerList, addSelectedPupils} from '../reducers/requestReducer'
 import moment from 'moment'
+import {EditableField} from "../listManager/editableField";
 
 const styles = require('./lightboxForAdding.css');
 
@@ -10,13 +11,19 @@ const styles = require('./lightboxForAdding.css');
 export class LightboxForAddingComponent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            matchedPupilList: []
-        };
 
         this.handleOnHideLightbox = this.handleOnHideLightbox.bind(this);
         this.handlePrimaryButton = this.handlePrimaryButton.bind(this);
         this.onModalOpen = this.onModalOpen.bind(this);
+        let matchedPupilList = [];
+        if (props.requestState.isPupilListReady && props.requestState.isTrainerListReady) {
+            matchedPupilList = this.matchPupilAndTrainer(props.requestState.pupilList, props.requestState.trainerList);
+
+        }
+        this.state = {
+            matchedPupilList,
+            filterValue: '',
+        };
 
     }
 
@@ -29,24 +36,28 @@ export class LightboxForAddingComponent extends React.Component {
     }
 
     render() {
-        const isLightboxOpened = this.props.requestState.isOpenLightboxForAdding;
         const isPupilListLoading = this.props.requestState.isPupilListLoading;
         const isTrainerListLoading = this.props.requestState.isTrainerListLoading;
-
-        const matchedPupilList = this.state.matchedPupilList;
         const isLoading = isTrainerListLoading || isPupilListLoading;
+        const filteredPupilList = this.getFilteredPupilList();
 
         return (
             <Modal
-                show={isLightboxOpened}
                 onEntered={this.onModalOpen}
                 onHide={this.handleOnHideLightbox}
                 bsSize="large"
+                show
                 aria-labelledby="contained-modal-title-lg">
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-lg">Выберите участников</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <div className={styles.controlPanel}>
+                        <EditableField placeholder='Введите имя спортсмена, дату рождения или имя тренера'
+                                       icon={<Glyphicon glyph="search"/>}
+                                       className={styles.filterField} middleSize onChange={this.filterHandler}/>
+                        <Button onClick={this.handlePrimaryButton} bsStyle="primary">Добавить участников</Button>
+                    </div>
                     <div className={styles.userList}>
                         {isLoading && <div className='loader-wrapper'>
                             <div className='loader'></div>
@@ -56,17 +67,13 @@ export class LightboxForAddingComponent extends React.Component {
                             {this.getHeader()}
                             </thead>
                             <tbody>
-                            {matchedPupilList.map((item, i) => {
-                                return this.getListItem(item, i);
+                            {filteredPupilList.map((item) => {
+                                return this.getListItem(item);
                             })}
                             </tbody>
                         </Table>
                     </div>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.handlePrimaryButton} bsStyle="primary">Добавить участников</Button>
-                    <Button onClick={this.handleOnHideLightbox}>Отмена</Button>
-                </Modal.Footer>
             </Modal>
         )
     }
@@ -80,15 +87,28 @@ export class LightboxForAddingComponent extends React.Component {
         </tr>
     }
 
-    getListItem(item, i) {
+    getFilteredPupilList() {
+        const filterValue = this.state.filterValue.trim().toLowerCase();
+        const matchedPupilList = this.state.matchedPupilList || [];
+        return matchedPupilList.filter(item => {
+            const momemtBirthday = moment.utc(item.birthday);
+            const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
+            const searchString = (item.fio + birthday + (item.trainer.fio || '')).toLowerCase();
+            return searchString.includes(filterValue);
+        });
+    }
+
+    filterHandler = (filterValue) => {
+        this.setState({filterValue});
+    };
+
+    getListItem(item) {
         const momemtBirthday = moment.utc(item.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
 
-        return <tr key={i} onClick={this.updateMatchedPupilList.bind(this, item, i)}>
+        return <tr key={item.id} onClick={this.toggleCheckOnPupil.bind(this, item)}>
             <td><Checkbox className={styles.checkbox} readOnly checked={!!item.checked}
-                          onClick={event => {
-                              this.updateMatchedPupilList(item, i, event.target.checked);
-                          }}
+
             /></td>
             <td>{item.fio}</td>
             <td>{birthday}</td>
@@ -121,8 +141,9 @@ export class LightboxForAddingComponent extends React.Component {
         this.props.toggleLightbox(false);
     }
 
-    updateMatchedPupilList(pupil, index) {
+    toggleCheckOnPupil(pupil) {
         const matchedPupilList = this.state.matchedPupilList;
+        const index = matchedPupilList.findIndex(item => item.id === pupil.id);
         const updatedMatchedPupilList = [
             ...matchedPupilList.slice(0, index),
             {...pupil, checked: !pupil.checked},

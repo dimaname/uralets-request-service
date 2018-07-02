@@ -60,13 +60,13 @@ export class RequestListComponent extends React.Component {
     }
 
     render() {
-        const {selectedPupils} = this.props.requestState;
+        const {selectedPupils, isOpenLightboxForAdding} = this.props.requestState;
         const listIsEmpty = selectedPupils.length === 0;
         const isSending = this.state.isSending;
 
         return (
             <div className={styles.root}>
-                <LightboxForAddingComponent/>
+                {isOpenLightboxForAdding && <LightboxForAddingComponent/>}
                 {isSending && <div className='loader-wrapper'>
                     <div className='loader'/>
                 </div>}
