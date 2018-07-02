@@ -142,9 +142,15 @@ export class ListManagerComponent extends React.Component {
     }
 
     renderConfirmModal() {
+        const activeTab = this.state.activeTab;
         const showConfirmDelete = this.state.showConfirmDelete;
         const deleteItemData = this.state.deleteItemData;
         const confirmFio = deleteItemData && deleteItemData.fio ? deleteItemData.fio : '';
+        let hasRelatedSportsmans = false;
+        if (activeTab === TABS.trainer) {
+            const trainerId = deleteItemData && deleteItemData.id;
+            hasRelatedSportsmans = this.checkRelatedSportsmans(trainerId);
+        }
         return (
             <Modal show={showConfirmDelete} onHide={this.closeConfirm} animation={false} backdrop='static'
                    dialogClassName={styles.confirmModal}
@@ -152,6 +158,10 @@ export class ListManagerComponent extends React.Component {
                 <Modal.Header closeButton>
                     <Modal.Title>Точно удалить запись {confirmFio}?</Modal.Title>
                 </Modal.Header>
+                {hasRelatedSportsmans && <Modal.Body>
+                    На данного тренера ссылаются некоторые записи о спортсменах. При его удалении, информация о ссылках
+                    будет утрачена.
+                </Modal.Body>}
                 <Modal.Footer>
                     <Button bsStyle="danger" onClick={this.approveConfirm}>Удалить</Button>
                     <Button bsStyle="primary" onClick={this.closeConfirm}>Отменить</Button>
@@ -354,6 +364,11 @@ export class ListManagerComponent extends React.Component {
                 </Button>
             </div>
         </td>
+    }
+
+    checkRelatedSportsmans(trainerId) {
+        const pupilsList = this.state.componentPupilsList;
+        return !!pupilsList.find(item => item.trainer.id === trainerId);
     }
 
     closeAlert = () => {

@@ -53,8 +53,8 @@ export class RequestListComponent extends React.Component {
                 isErrorSendingMessage: false,
                 isSuccessSendingMessage: false,
                 competitionTitleError: false,
-                sendingErrorText: '',
                 showValidationMessage: false,
+                sendingErrorText: '',
             });
         }
     }
