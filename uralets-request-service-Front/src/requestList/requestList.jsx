@@ -1,6 +1,18 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
-import {ButtonToolbar, Button, Table, Form, FormGroup, FormControl, Glyphicon, Checkbox, Alert, ControlLabel, Col} from 'react-bootstrap';
+import {
+    ButtonToolbar,
+    Button,
+    Table,
+    Form,
+    FormGroup,
+    FormControl,
+    Glyphicon,
+    Checkbox,
+    Alert,
+    ControlLabel,
+    Col
+} from 'react-bootstrap';
 import {
     toggleLightbox,
     updateSelectedPupils,
@@ -32,6 +44,19 @@ export class RequestListComponent extends React.Component {
         this.handleAddBtnClick = this.handleAddBtnClick.bind(this);
         this.primaryButtonHandler = this.primaryButtonHandler.bind(this);
         this.emptySendButtonHandler = this.emptySendButtonHandler.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {selectedPupils} = nextProps.requestState;
+        if (selectedPupils.length === 0) {
+            this.setState({
+                isErrorSendingMessage: false,
+                isSuccessSendingMessage: false,
+                competitionTitleError: false,
+                sendingErrorText: '',
+                showValidationMessage: false,
+            });
+        }
     }
 
     render() {
@@ -78,7 +103,7 @@ export class RequestListComponent extends React.Component {
         )
     }
 
-    renderCompetitionTitle(){
+    renderCompetitionTitle() {
         const {competitionTitle} = this.props.requestState;
         const competitionTitleError = this.state.competitionTitleError;
 
@@ -144,7 +169,7 @@ export class RequestListComponent extends React.Component {
             <th className={styles.levelColumn}>Разряд</th>
             <th className={styles.departColumn}>Ведомство</th>
             <th className={styles.trainerColumn}>Тренер</th>
-            <th className={styles.toolsColumn}> </th>
+            <th className={styles.toolsColumn}></th>
         </tr>
     }
 
@@ -175,11 +200,15 @@ export class RequestListComponent extends React.Component {
             <td>{item.trainer.fio}</td>
             <td>
                 <Button bsStyle="link" className={styles.removeBtn}
-                        onClick={this.props.removeFromSelectedPupils.bind(null, i)}><Glyphicon glyph="remove"/>
+                        onClick={() => this.removeItem(i)}><Glyphicon glyph="remove"/>
                 </Button>
             </td>
         </tr>
     }
+
+    removeItem = (index) => {
+        this.props.removeFromSelectedPupils(index);
+    };
 
     updateItem(index, propName, value) {
         if (!propName) return;
@@ -239,7 +268,7 @@ export class RequestListComponent extends React.Component {
         const newState = {};
         try {
             await this.props.sendRequestToServer();
-            this.clearItmesErrors();
+            this.clearItemsErrors();
             newState.isSending = false;
             newState.isSuccessSendingMessage = true;
 
@@ -277,7 +306,7 @@ export class RequestListComponent extends React.Component {
         return isGood;
     }
 
-    clearItmesErrors() {
+    clearItemsErrors() {
         const selectedPupils = this.props.requestState.selectedPupils;
         let isGood = true;
         selectedPupils.forEach((item, index) => {

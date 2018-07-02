@@ -142,9 +142,10 @@ const reducer = handleActions({
         };
     },
     [setPupilList.toString()]: (state, action) => {
+        const sortedPupilList = action.payload.sort(compareByFio);
         return {
             ...state,
-            pupilList: action.payload,
+            pupilList: sortedPupilList,
             isPupilListReady: true,
         };
     },
@@ -165,9 +166,10 @@ const reducer = handleActions({
         };
     },
     [setTrainerList.toString()]: (state, action) => {
+        const sortedTrainerList = action.payload.sort(compareByFio);
         return {
             ...state,
-            trainerList: action.payload,
+            trainerList: sortedTrainerList,
             isTrainerListReady: true,
         };
     },
@@ -187,9 +189,10 @@ const reducer = handleActions({
         });
 
         const selectedPupils = [...state.selectedPupils, ...newItems];
+        const sortedSelectedPupils = selectedPupils.sort(compareByFio);
         return {
             ...state,
-            selectedPupils,
+            selectedPupils: sortedSelectedPupils,
         };
     },
     [removeFromSelectedPupils.toString()]: (state, action) => {
@@ -214,10 +217,10 @@ const reducer = handleActions({
             updatedItem,
             ...state.selectedPupils.slice(index + 1)
         ];
-
+        const sortedSelectedPupils = selectedPupils.sort(compareByFio);
         return {
             ...state,
-            selectedPupils,
+            selectedPupils: sortedSelectedPupils,
         };
 
     },
@@ -225,18 +228,20 @@ const reducer = handleActions({
         if (!action.payload) return state;
         const newProps = action.payload;
         const pupilList = getListWithUpdatedItem(state.pupilList, newProps);
+        const sortedPupilList = pupilList.sort(compareByFio);
         return {
             ...state,
-            pupilList,
+            pupilList: sortedPupilList,
         };
     },
     [updateTrainerInList.toString()]: (state, action) => {
         if (!action.payload) return state;
         const newProps = action.payload;
         const trainerList = getListWithUpdatedItem(state.trainerList, newProps);
+        const sortedTrainerList = trainerList.sort(compareByFio);
         return {
             ...state,
-            trainerList,
+            trainerList: sortedTrainerList,
         };
     },
     [addPupilToList.toString()]: (state, action) => {
@@ -244,9 +249,10 @@ const reducer = handleActions({
         if (!newItem) return state;
 
         const pupilList = [...state.pupilList, newItem];
+        const sortedPupilList = pupilList.sort(compareByFio);
         return {
             ...state,
-            pupilList,
+            pupilList: sortedPupilList,
         };
     },
     [addTrainerToList.toString()]: (state, action) => {
@@ -254,9 +260,10 @@ const reducer = handleActions({
         if (!newItem) return state;
 
         const trainerList = [...state.trainerList, newItem];
+        const sortedTrainerList = trainerList.sort(compareByFio);
         return {
             ...state,
-            trainerList,
+            trainerList: sortedTrainerList,
         };
     },
     [deletePupilInList.toString()]: (state, action) => {
@@ -280,6 +287,10 @@ const reducer = handleActions({
 
 }, initialState);
 
+
+function compareByFio(itemA, itemB) {
+    return itemA.fio.localeCompare(itemB.fio);
+}
 
 function getListWithUpdatedItem(list, itemNewProps) {
     const index = list.findIndex(item => item.id === itemNewProps.id);
