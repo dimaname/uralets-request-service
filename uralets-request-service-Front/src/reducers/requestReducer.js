@@ -15,6 +15,7 @@ export const addTrainerToList = createAction('ADD_TRAINER_TO_LIST', (data) => (d
 export const setTrainerList = createAction('SET_TRAINER_LIST', (data) => (data));
 export const addSelectedPupils = createAction('ADD_SELECTED_PUPILS', (data) => (data));
 export const removeFromSelectedPupils = createAction('REMOVE_SELECTED_PUPILS', (data) => (data));
+export const removeAllSelectedPupils = createAction('REMOVE_ALL_SELECTED_PUPILS', (data) => (data));
 export const updateSelectedPupils = createAction('UPDATE_SELECTED_PUPILS', (data) => (data));
 export const setTrainerModel = createAction('SET_TRAINERS_MODEL', (data) => (data));
 export const setPupilModel = createAction('SET_PUPIL_MODEL', (data) => (data));
@@ -205,6 +206,12 @@ const reducer = handleActions({
         return {
             ...state,
             selectedPupils,
+        };
+    },
+    [removeAllSelectedPupils.toString()]: (state) => {
+        return {
+            ...state,
+            selectedPupils : [],
         };
     },
     [updateSelectedPupils.toString()]: (state, action) => {

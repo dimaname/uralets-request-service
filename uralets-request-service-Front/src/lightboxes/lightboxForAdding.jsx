@@ -23,12 +23,12 @@ export class LightboxForAddingComponent extends React.Component {
         this.state = {
             matchedPupilList,
             filterValue: '',
+            isDisabledAddButton: true,
         };
 
     }
 
     componentWillReceiveProps(nextProps) {
-
         if (nextProps.requestState.isPupilListReady && nextProps.requestState.isTrainerListReady) {
             const matchedPupilList = this.matchPupilAndTrainer(nextProps.requestState.pupilList, nextProps.requestState.trainerList);
             this.setState({matchedPupilList});
@@ -40,7 +40,7 @@ export class LightboxForAddingComponent extends React.Component {
         const isTrainerListLoading = this.props.requestState.isTrainerListLoading;
         const isLoading = isTrainerListLoading || isPupilListLoading;
         const filteredPupilList = this.getFilteredPupilList();
-
+        const isDisabledAddButton = this.state.isDisabledAddButton;
         return (
             <Modal
                 onEntered={this.onModalOpen}
@@ -56,7 +56,8 @@ export class LightboxForAddingComponent extends React.Component {
                         <EditableField placeholder='Введите имя спортсмена, дату рождения или имя тренера'
                                        icon={<Glyphicon glyph="search"/>}
                                        className={styles.filterField} middleSize onChange={this.filterHandler}/>
-                        <Button onClick={this.handlePrimaryButton} bsStyle="primary">Добавить участников</Button>
+                        <Button onClick={this.handlePrimaryButton} bsStyle="primary" disabled={isDisabledAddButton}>Добавить
+                            участников</Button>
                     </div>
                     <div className={styles.userList}>
                         {isLoading && <div className='loader-wrapper'>
@@ -149,9 +150,10 @@ export class LightboxForAddingComponent extends React.Component {
             {...pupil, checked: !pupil.checked},
             ...matchedPupilList.slice(index + 1)
         ];
-
+        const isDisabledAddButton = updatedMatchedPupilList.every(item=>!item.checked);
         this.setState({
-            matchedPupilList: updatedMatchedPupilList
+            matchedPupilList: updatedMatchedPupilList,
+            isDisabledAddButton
         });
     }
 

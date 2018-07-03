@@ -11,7 +11,7 @@ import {
 import {connect} from 'react-redux'
 import {
     deleteSportsmenItem, deleteTrainerItem, getPupilList, getTrainerList, matchPupilAndTrainer, updateSportsmenItem,
-    updateTrainerItem
+    updateTrainerItem, removeAllSelectedPupils
 } from "../reducers/requestReducer";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import moment from 'moment'
@@ -475,6 +475,7 @@ export class ListManagerComponent extends React.Component {
                 this.updateTabDataByIndex(index, {editMode: false});
             }
         }
+        this.props.removeAllSelectedPupils();
     };
 
     onClickCancelBtnHandler = (index) => {
@@ -548,6 +549,7 @@ export class ListManagerComponent extends React.Component {
             this.updateTabDataByIndex(index, {isSaving: false});
             this.showDeletingErrorAlert();
         } finally {
+            this.props.removeAllSelectedPupils();
             this.setState({deleteItemData: null});
         }
     }
@@ -569,7 +571,15 @@ export class ListManagerComponent extends React.Component {
 
 export default connect(
     (state) => ({requestState: state.request}),
-    {getTrainerList, getPupilList, updateSportsmenItem, updateTrainerItem, deleteSportsmenItem, deleteTrainerItem}
+    {
+        getTrainerList,
+        getPupilList,
+        updateSportsmenItem,
+        updateTrainerItem,
+        deleteSportsmenItem,
+        deleteTrainerItem,
+        removeAllSelectedPupils
+    }
 )(ListManagerComponent);
 
 
