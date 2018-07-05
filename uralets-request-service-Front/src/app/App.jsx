@@ -9,6 +9,7 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import {connect} from 'react-redux'
 import {getApp} from '../reducers/appReducer'
 
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -29,7 +30,7 @@ class App extends Component {
 
         return <HashRouter>
             <div>
-                <Header/>
+                <Header />
                 <Grid>
                     <Row className="show-grid">
                         <Col xs={12} sm={12}>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = "http://localhost/api.php"
+const apiUrl = "http://localhost/servicex/api.php"
 
 
 export const appApi = {
