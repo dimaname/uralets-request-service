@@ -32,7 +32,7 @@ const initialState = {
 const reducer = handleActions({
     [setUser.toString()]: (state, action) => {
         const userData = action.payload;
-     
+        if(!userData) return state;
         return {
             ...state, id:userData.id, username: userData.username,
         };

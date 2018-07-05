@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = "http://localhost/servicex/api.php"
+const apiUrl = "/servicex/api.php"
 
 
 export const appApi = {
@@ -15,11 +15,13 @@ export const appApi = {
     },
     getPupilList() {
         return axios.get('/mens', {baseURL: apiUrl, withCredentials: true}).then(data => {
+            if(!data.data.mens) throw 'error';
             return {result: deserialize(data.data.mens), columns: data.data.mens.columns};
         });
     },
     getTrainerList() {
         return axios.get('/trainers', {baseURL: apiUrl, withCredentials: true}).then(data => {
+            if(!data.data.trainers) throw 'error';
             return {result: deserialize(data.data.trainers), columns: data.data.trainers.columns};
         });
     },
