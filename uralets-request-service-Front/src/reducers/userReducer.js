@@ -27,6 +27,7 @@ export const logout = () =>
 const initialState = {
     id: null,
     username: null,
+    isAdmin: null,
 };
 
 const reducer = handleActions({
@@ -34,12 +35,12 @@ const reducer = handleActions({
         const userData = action.payload;
         if(!userData) return state;
         return {
-            ...state, id:userData.id, username: userData.username,
+            ...state, ...userData,
         };
     },
-    [clearUser.toString()]: (state, action) => {
+    [clearUser.toString()]: (state) => {
         return {
-            ...state, id:null, username: null,
+            ...state, id:null, username: null, isAdmin: null,
         };
     }
     }, initialState);  

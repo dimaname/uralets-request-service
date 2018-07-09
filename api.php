@@ -2672,19 +2672,25 @@ class PHP_CRUD_API {
 	}
 }
 ob_start();
+
 require __DIR__ . '/vendor/autoload.php';
 require 'auth_helper.php';
 $db = new \Delight\Db\PdoDsn('mysql:dbname=service-x;host=localhost;charset=utf8mb4', 'root', '');
 
 $auth = new \Delight\Auth\Auth($db);
-$authHook = new PHP_API_AUTH($auth);	
+$authHook = new PHP_API_AUTH($auth);
+
+ 
+  
+  
 	if ($authHook->executeCommand()) exit(0);
 	if (!$auth->isLoggedIn()){	
-		$x = pathinfo($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);			
+		$x = pathinfo($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);	
 		header('Location: http://'.$x['dirname'].'/#/login', true, 307 ); 
-			ob_end_flush();exit(0);
-	} 
-	
+		ob_end_flush();
+		exit(0);
+	}
+	$isAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::ADMIN);
   $api = new PHP_CRUD_API(array(
  	'dbengine'=>'MySQL',
  	'hostname'=>'localhost:3306',
@@ -2693,10 +2699,9 @@ $authHook = new PHP_API_AUTH($auth);
  	'database'=>'service-x',
  	'charset'=>'utf8',
 	'table_authorizer'=>function($cmd,$db,$tab) { return $tab == 'mens' || $tab == 'trainers'; },
+	'input_validator'=>function($cmd,$db,$tab,$col,$typ,$val,$ctx) use ($isAdmin) { return $isAdmin; },
  ));
-	
- 		
-	$api->executeCommand();
-	
-	ob_end_flush();
-?>
+ $api->executeCommand();
+ ob_end_flush();
+
+

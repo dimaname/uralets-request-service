@@ -132,6 +132,7 @@ class PHP_API_AUTH {
 					$app['user'] = null;
 					$userData['id'] = $auth->getUserId();
 					$userData['username'] = $auth->getUsername(); 
+					$userData['isAdmin'] = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::ADMIN);					
 					echo json_encode($userData);
 					
 				}
@@ -172,12 +173,15 @@ class PHP_API_AUTH {
 			$auth = $this->auth;
 			$app = array();
 			$app['user'] = null;
+
 			if ($auth->isLoggedIn() && $auth->isNormal() ){
 			    $userData = array();
 				$userData['id'] = $auth->getUserId();
-				$userData['username'] = $auth->getUsername();    	
-				$app['user'] = $userData;				
+				$userData['username'] = $auth->getUsername();   
+				$userData['isAdmin'] = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::ADMIN);					
+				$app['user'] = $userData;
 			}
+			
 			echo json_encode($app);
 			return true;
 		}else if($method=='GET' && 'logout' == $request){
@@ -286,7 +290,7 @@ function sendFileToMail($blankData, $filepath){
 	  
 		//Recipients
 		$mail->setFrom('admin@scuralets.ru', 'Administrator');
-		//$mail->addAddress('judamigo@yandex.ru');     
+		$mail->addAddress('judamigo@yandex.ru');     
 		$mail->addAddress('dimaname@gmail.com');     
         $mail->Subject = "Заявка на соревнование";
         $mail->Body   = "Название соревнования: ".$competitionTitle;
@@ -311,3 +315,4 @@ function logger($txt){
 	fwrite($logFile, $txt);
 	fclose($logFile);	
 }
+?>

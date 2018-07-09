@@ -10,6 +10,7 @@ class Header extends React.Component {
 
     render() {
         const isAuth = this.props.user.id !== null;
+        const isAdmin = !!this.props.user.isAdmin;
 
         return (
             <Navbar inverse fixedTop>
@@ -26,9 +27,9 @@ class Header extends React.Component {
                         <LinkContainer exact to="/">
                             <NavItem>Заявка</NavItem>
                         </LinkContainer>
-                        <LinkContainer exact to="/db">
+                        {isAdmin &&<LinkContainer exact to="/db">
                             <NavItem>База</NavItem>
-                        </LinkContainer>
+                        </LinkContainer>}
                     </Nav>}
                     <Nav pullRight>
                         {isAuth && <NavItem onClick={this.logout.bind(this)}>Выйти</NavItem>}
