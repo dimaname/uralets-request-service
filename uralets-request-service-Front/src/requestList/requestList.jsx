@@ -275,6 +275,7 @@ export class RequestListComponent extends React.Component {
         try {
             await this.props.sendRequestToServer();
             this.clearItemsErrors();
+            this.clearCompetitionTitleError();
             newState.isSending = false;
             newState.isSuccessSendingMessage = true;
 
@@ -323,8 +324,9 @@ export class RequestListComponent extends React.Component {
 
             this.props.updateSelectedPupils({index, props});
         });
-
-        return isGood;
+    }
+    clearCompetitionTitleError() {
+        this.setState({competitionTitleError: false});
     }
 }
 
