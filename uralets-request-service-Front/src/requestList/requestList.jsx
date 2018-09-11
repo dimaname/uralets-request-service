@@ -13,6 +13,8 @@ import {
     ControlLabel,
     Col
 } from 'react-bootstrap';
+import MaskedFormControl from 'react-bootstrap-maskedinput'
+
 import {
     toggleLightbox,
     updateSelectedPupils,
@@ -176,21 +178,25 @@ export class RequestListComponent extends React.Component {
     getTableRow(item, i) {
         const momemtBirthday = moment.utc(item.birthday);
         const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
-
+        const rules = {
+            '+': {
+                validate: function (char) {
+                    return /[0-9+]/.test(char)
+                },
+            }
+        };
         return <tr key={item.frontId}>
             <td>{i + 1}.</td>
             <td>{item.fio}</td>
             <td>{birthday}</td>
             <td><FormGroup bsSize="small" className={styles.weightForm}
                            validationState={item.weightError && !item.weight ? 'error' : null}>
-                <FormControl
-                    type="text"
-                    maxLength="20"
-                    value={item.weight || ''}
-                    onChange={(event) => {
-                        this.updateItem(i, 'weight', event.target.value);
-                    }}
-                />
+                <MaskedFormControl type='text' name='weight' mask='+111' placeholder="+___"
+                                   formatCharacters={rules} className={styles.weightInput}
+                                   onChange={(event) => {
+                                       const weight = event.target.value.replace(/([^0-9a-z+]|'_')/gi, '')
+                                       this.updateItem(i, 'weight', weight);
+                                   }}/>
             </FormGroup></td>
             <td><CategorySelector error={item.levelError}
                                   value={item.level}

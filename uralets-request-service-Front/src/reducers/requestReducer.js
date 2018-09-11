@@ -102,8 +102,8 @@ export const sendRequestToServer = () =>
         const state = s().request;
         const competitionTitle = state.competitionTitle;
         const selectedPupils = state.selectedPupils.map(item => {
-            const momemtBirthday = moment(item.birthday);
-            const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
+            const momentBirthday = moment(item.birthday);
+            const birthday = momentBirthday.isValid() ? momentBirthday.format("DD.MM.YYYY") : '';
             return {
                 fio: item.fio,
                 birthday: birthday,
@@ -111,7 +111,8 @@ export const sendRequestToServer = () =>
                 weight: item.weight,
                 trainerFio: item.trainer.fio,
             }
-        });
+        }).sort(compareByWeightThenFio);
+        debugger
         return api.appApi.sendRequestToServer({selectedPupils, competitionTitle});
     };
 
@@ -211,7 +212,7 @@ const reducer = handleActions({
     [removeAllSelectedPupils.toString()]: (state) => {
         return {
             ...state,
-            selectedPupils : [],
+            selectedPupils: [],
         };
     },
     [updateSelectedPupils.toString()]: (state, action) => {
@@ -297,6 +298,26 @@ const reducer = handleActions({
 
 function compareByFio(itemA, itemB) {
     return itemA.fio.localeCompare(itemB.fio);
+}
+
+function compareByWeightThenFio(itemA, itemB) {
+    const aWeigth = itemA.weight || '';
+    const bWeigth = itemB.weight || '';
+    const aNumber = parseInt(aWeigth) || 0;
+    const bNumber = parseInt(bWeigth) || 0;
+
+    if (aNumber === bNumber) {
+        const aHasPlus = aWeigth.charAt(0) === '+';
+        const bHasPlus = bWeigth.charAt(0) === '+';
+        if (aHasPlus && bHasPlus || !aHasPlus && !bHasPlus) {
+            return compareByFio(itemA, itemB);
+        } else {
+            return bHasPlus - aHasPlus;
+        }
+
+    } else {
+        return bNumber - aNumber;
+    }
 }
 
 function getListWithUpdatedItem(list, itemNewProps) {

@@ -19,6 +19,11 @@
     width: 155px;
 }
 
+.weightInput{
+    width: 75px;
+}
+
+
 .levelColumn {
     width: 100px;
     min-width: 100px;
