@@ -112,7 +112,7 @@ export const sendRequestToServer = () =>
                 trainerFio: item.trainer.fio,
             }
         }).sort(compareByWeightThenFio);
-        debugger
+        
         return api.appApi.sendRequestToServer({selectedPupils, competitionTitle});
     };
 
@@ -312,11 +312,11 @@ function compareByWeightThenFio(itemA, itemB) {
         if (aHasPlus && bHasPlus || !aHasPlus && !bHasPlus) {
             return compareByFio(itemA, itemB);
         } else {
-            return bHasPlus - aHasPlus;
+            return aHasPlus - bHasPlus;
         }
 
     } else {
-        return bNumber - aNumber;
+        return aNumber - bNumber;
     }
 }
 
