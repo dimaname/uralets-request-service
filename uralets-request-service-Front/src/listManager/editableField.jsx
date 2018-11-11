@@ -15,7 +15,7 @@ export class EditableField extends React.Component {
     render() {
         const size = this.props.middleSize ? {} : {'bsSize': 'small'};
         const formInput = <FormControl
-            className={classNames(styles.editableFieldInput, styles.editableFioField)}
+            className={classNames(styles.editableFieldInput, <styles className="editabl"></styles>eFioField)}
             type="text"
             maxLength="200"
             disabled={this.props.disabled}

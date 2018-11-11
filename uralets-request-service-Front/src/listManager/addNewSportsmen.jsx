@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {connect} from 'react-redux'
-import {Button, Form, Glyphicon} from "react-bootstrap";
+import {Button, Form, FormGroup, Glyphicon} from "react-bootstrap";
 import {EditableField} from "./editableField";
 import {EditableDatetimeField} from "./editableDatetimeField";
 import {EditableDropdownField} from "./editableDropdownField";
 import {addSportsmenItem} from "../reducers/requestReducer";
-
+import Multiselect from "react-bootstrap-multiselect";
 const styles = require('./listManager.css');
 
 class AddNewSportsmen extends React.Component {
@@ -49,6 +49,7 @@ class AddNewSportsmen extends React.Component {
 
     render() {
         const {trainersList, fioError, birthdayError, trainerError, isSaving} = this.state;
+        const selectData = [{value:'One'},{value:'Two'},{value:'Three'},{value:'Four',label:'Four Label'}];
         return (
             <div className={styles.addNewRowBlock}>
                 <h4 className={styles.addNewRowBlockHeader}>Добавить нового</h4>
@@ -74,6 +75,7 @@ class AddNewSportsmen extends React.Component {
                                                }}
                                                label="Тренер" className={styles.editableFieldAddNewBlock}
                                                onChange={this.updateField.bind(this, 'trainer')}/>
+
                     </div>
                     <div className={styles.buttonsContainer}>
                         <Button bsStyle="link" className={styles.editBtn} title="Добавить"

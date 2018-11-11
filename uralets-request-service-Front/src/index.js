@@ -4,6 +4,7 @@ import {
     Provider
 } from 'react-redux'
 import 'bootstrap/dist/css/bootstrap.css';
+import 'react-bootstrap-multiselect/css/bootstrap-multiselect.css';
 import './index.css';
 import App from './app/App';
 import {initStore} from './app/initStore';

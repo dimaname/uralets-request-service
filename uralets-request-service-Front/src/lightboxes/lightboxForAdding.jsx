@@ -46,6 +46,7 @@ export class LightboxForAddingComponent extends React.Component {
                 onEntered={this.onModalOpen}
                 onHide={this.handleOnHideLightbox}
                 bsSize="large"
+                dialogClassName={styles.modalClass}
                 show
                 aria-labelledby="contained-modal-title-lg">
                 <Modal.Header closeButton>
@@ -92,8 +93,8 @@ export class LightboxForAddingComponent extends React.Component {
         const filterValue = this.state.filterValue.trim().toLowerCase();
         const matchedPupilList = this.state.matchedPupilList || [];
         return matchedPupilList.filter(item => {
-            const momemtBirthday = moment.utc(item.birthday);
-            const birthday = momemtBirthday.isValid() ? momemtBirthday.format("DD.MM.YYYY") : '';
+            const momentBirthday = moment.utc(item.birthday);
+            const birthday = momentBirthday.isValid() ? momentBirthday.format("DD.MM.YYYY") : '';
             const searchString = (item.fio + birthday + (item.trainer.fio || '')).toLowerCase();
             return searchString.includes(filterValue);
         });

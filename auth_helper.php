@@ -290,7 +290,7 @@ function sendFileToMail($blankData, $filepath){
 	  
 		//Recipients
 		$mail->setFrom('admin@scuralets.ru', 'Administrator');
-		$mail->addAddress('judamigo@yandex.ru');     
+		//$mail->addAddress('judamigo@yandex.ru');     
 		$mail->addAddress('dimaname@gmail.com');     
         $mail->Subject = "Заявка на соревнование";
         $mail->Body   = "Название соревнования: ".$competitionTitle;

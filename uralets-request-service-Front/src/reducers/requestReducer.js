@@ -112,7 +112,7 @@ export const sendRequestToServer = () =>
                 trainerFio: item.trainer.fio,
             }
         }).sort(compareByWeightThenFio);
-        
+
         return api.appApi.sendRequestToServer({selectedPupils, competitionTitle});
     };
 
